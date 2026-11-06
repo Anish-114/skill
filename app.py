@@ -2,6 +2,7 @@ import spaces
 import gradio as gr
 import os
 import sys
+import uvicorn
 
 @spaces.GPU
 def check_gpu():
@@ -22,7 +23,8 @@ with gr.Blocks(title="SkillBridge AI") as demo:
     lbl = gr.Label()
     btn.click(fn=check_gpu, outputs=lbl)
 
+# Mount Gradio onto the primary FastAPI app
 app = gr.mount_gradio_app(fastapi_app, demo, path="/gradio")
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860, app=app)
+    uvicorn.run(app, host="0.0.0.0", port=7860)
