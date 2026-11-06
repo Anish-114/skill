@@ -11,6 +11,10 @@ import {
   Brain,
   Layers,
   ArrowRight,
+  Compass,
+  Clock,
+  Video,
+  FileText,
 } from 'lucide-react';
 import { FullEvaluation } from '../types';
 import { cn } from '../utils/cn';
@@ -245,6 +249,98 @@ export const EvaluationModal: React.FC<EvaluationModalProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Structured Learning Roadmap (Requirement 3) */}
+          {evaluation.roadmap && evaluation.roadmap.milestones.length > 0 && (
+            <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Compass className="w-4 h-4 text-brand-400" />
+                  Structured Learning Roadmap
+                </h4>
+                <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <Clock className="w-3.5 h-3.5 text-slate-500" />
+                  <span>
+                    Est. Duration: <strong className="text-white">{evaluation.roadmap.estimated_duration}</strong>
+                  </span>
+                </div>
+              </div>
+
+              {/* Deadline Warning Callout (Requirement 2 & 3) */}
+              {evaluation.roadmap.warning_message && (
+                <div className="mb-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-2.5 text-xs text-amber-200">
+                  <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{evaluation.roadmap.warning_message}</span>
+                </div>
+              )}
+
+              {/* Milestones List */}
+              <div className="space-y-3">
+                {evaluation.roadmap.milestones.map((m) => {
+                  const isFocus = evaluation.roadmap?.recommended_focus_skills?.includes(m.skill);
+
+                  return (
+                    <div
+                      key={m.priority}
+                      className={cn(
+                        'p-3.5 rounded-xl border bg-slate-900/70 transition-all',
+                        isFocus ? 'border-brand-500/30' : 'border-slate-800'
+                      )}
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-lg bg-brand-500/20 text-brand-300 border border-brand-500/30 text-xs font-extrabold flex items-center justify-center">
+                            #{m.priority}
+                          </span>
+                          <span className="font-bold text-sm text-white">{m.skill}</span>
+                          {isFocus && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-semibold">
+                              Priority Focus
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs text-slate-400 font-medium">{m.duration_label}</span>
+                      </div>
+
+                      {/* Curated Resources */}
+                      {m.resources.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-800/60">
+                          {m.resources.map((res, rIdx) => (
+                            <a
+                              key={rIdx}
+                              href={res.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 rounded-lg bg-slate-950/80 hover:bg-slate-800/90 border border-slate-800 hover:border-brand-500/40 flex items-start justify-between gap-2 transition-all group"
+                              title={res.title}
+                            >
+                              <div className="min-w-0">
+                                <div className="text-xs font-semibold text-slate-200 group-hover:text-brand-300 truncate">
+                                  {res.title}
+                                </div>
+                                <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mt-1">
+                                  <span className="uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">
+                                    {res.type}
+                                  </span>
+                                  {res.free && <span className="text-emerald-400 font-semibold">Free</span>}
+                                  <span>• {res.estimated_hours}h</span>
+                                </div>
+                              </div>
+                              <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-brand-400 flex-shrink-0 mt-0.5 transition-colors" />
+                            </a>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[11px] text-slate-500 italic mt-1">
+                          No curated resources listed yet. Recommended: Practice official documentation or hands-on tutorials.
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Actionable Preparation Checklist */}
           {skill_gap.preparation_checklist.length > 0 && (

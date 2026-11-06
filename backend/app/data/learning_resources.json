@@ -1,0 +1,265 @@
+{
+  "python": [
+    {
+      "title": "Official Python 3 Tutorial",
+      "url": "https://docs.python.org/3/tutorial/",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 8
+    },
+    {
+      "title": "Real Python Learning Path & Tutorials",
+      "url": "https://realpython.com/",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 12
+    }
+  ],
+  "fastapi": [
+    {
+      "title": "FastAPI Official Tutorial & User Guide",
+      "url": "https://fastapi.tiangolo.com/tutorial/",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 6
+    },
+    {
+      "title": "FastAPI Core Features & Benchmarks",
+      "url": "https://fastapi.tiangolo.com/features/",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 4
+    }
+  ],
+  "react": [
+    {
+      "title": "React Official Interactive Documentation",
+      "url": "https://react.dev/learn",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 10
+    },
+    {
+      "title": "MDN Web Docs: Getting Started with React",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/React_getting_started",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 6
+    }
+  ],
+  "docker": [
+    {
+      "title": "Docker Official Get Started Guide",
+      "url": "https://docs.docker.com/get-started/",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 6
+    },
+    {
+      "title": "Docker Curriculum for Beginners",
+      "url": "https://docker-curriculum.com/",
+      "type": "course",
+      "free": true,
+      "estimated_hours": 4
+    }
+  ],
+  "kubernetes": [
+    {
+      "title": "Kubernetes Official Interactive Basics Tutorial",
+      "url": "https://kubernetes.io/docs/tutorials/kubernetes-basics/",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 8
+    }
+  ],
+  "pytorch": [
+    {
+      "title": "PyTorch Official Learn the Basics",
+      "url": "https://pytorch.org/tutorials/beginner/basics/intro.html",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 10
+    },
+    {
+      "title": "PyTorch Recipes & Practical Examples",
+      "url": "https://pytorch.org/tutorials/recipes/recipes_index.html",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 6
+    }
+  ],
+  "machine learning": [
+    {
+      "title": "Google Developers Machine Learning Crash Course",
+      "url": "https://developers.google.com/machine-learning/crash-course",
+      "type": "course",
+      "free": true,
+      "estimated_hours": 15
+    },
+    {
+      "title": "Scikit-Learn Official User Guide & Tutorials",
+      "url": "https://scikit-learn.org/stable/user_guide.html",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 8
+    }
+  ],
+  "deep learning": [
+    {
+      "title": "Dive into Deep Learning (D2L.ai Open Textbook)",
+      "url": "https://d2l.ai/",
+      "type": "course",
+      "free": true,
+      "estimated_hours": 20
+    }
+  ],
+  "natural language processing": [
+    {
+      "title": "Hugging Face Official NLP Course",
+      "url": "https://huggingface.co/learn/nlp-course/",
+      "type": "course",
+      "free": true,
+      "estimated_hours": 14
+    }
+  ],
+  "computer vision": [
+    {
+      "title": "OpenCV Python Official Documentation & Tutorials",
+      "url": "https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 10
+    }
+  ],
+  "postgresql": [
+    {
+      "title": "PostgreSQL Official Tutorial",
+      "url": "https://www.postgresql.org/docs/current/tutorial.html",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 6
+    },
+    {
+      "title": "PostgreSQL Tutorial for Developers",
+      "url": "https://www.postgresqltutorial.com/",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 8
+    }
+  ],
+  "data structures & algorithms": [
+    {
+      "title": "NeetCode Interactive DSA Roadmap",
+      "url": "https://neetcode.io/roadmap",
+      "type": "course",
+      "free": true,
+      "estimated_hours": 25
+    },
+    {
+      "title": "VisuAlgo: Visualizing Data Structures and Algorithms",
+      "url": "https://visualgo.net/en",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 8
+    }
+  ],
+  "system design": [
+    {
+      "title": "The System Design Primer (GitHub Open Source)",
+      "url": "https://github.com/donnemartin/system-design-primer",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 16
+    }
+  ],
+  "git": [
+    {
+      "title": "Pro Git Book (Official Documentation)",
+      "url": "https://git-scm.com/book/en/v2",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 5
+    }
+  ],
+  "typescript": [
+    {
+      "title": "TypeScript Official Handbook",
+      "url": "https://www.typescriptlang.org/docs/handbook/intro.html",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 6
+    }
+  ],
+  "javascript": [
+    {
+      "title": "MDN Web Docs: Learn JavaScript",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn/JavaScript",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 12
+    }
+  ],
+  "node.js": [
+    {
+      "title": "Node.js Official Documentation & Guides",
+      "url": "https://nodejs.org/en/learn",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 8
+    }
+  ],
+  "next.js": [
+    {
+      "title": "Next.js Official Interactive Learning App",
+      "url": "https://nextjs.org/learn",
+      "type": "course",
+      "free": true,
+      "estimated_hours": 8
+    }
+  ],
+  "flutter": [
+    {
+      "title": "Flutter Official Getting Started Codelab",
+      "url": "https://docs.flutter.dev/get-started/codelab",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 6
+    }
+  ],
+  "go": [
+    {
+      "title": "A Tour of Go (Interactive Official Tour)",
+      "url": "https://go.dev/tour/",
+      "type": "course",
+      "free": true,
+      "estimated_hours": 6
+    }
+  ],
+  "redis": [
+    {
+      "title": "Redis Official Developer Quick Start",
+      "url": "https://redis.io/docs/latest/develop/get-started/",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 4
+    }
+  ],
+  "cybersecurity": [
+    {
+      "title": "OWASP Top 10 Web Application Security Risks",
+      "url": "https://owasp.org/www-project-top-ten/",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 6
+    }
+  ],
+  "blockchain": [
+    {
+      "title": "Ethereum Official Developer Documentation",
+      "url": "https://ethereum.org/en/developers/docs/",
+      "type": "docs",
+      "free": true,
+      "estimated_hours": 12
+    }
+  ]
+}

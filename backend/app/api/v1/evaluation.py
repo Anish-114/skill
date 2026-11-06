@@ -8,9 +8,11 @@ from app.schemas.evaluation import (
     FullEvaluationResponse,
     EligibilityCheckResult,
     SkillGapAnalysisResponse,
+    LearningRoadmapResponse,
 )
 from app.services.eligibility_engine import evaluate_eligibility
 from app.services.skill_gap_engine import analyze_skill_gap
+from app.services.roadmap_engine import generate_learning_roadmap
 from app.services.recommendation_engine import (
     calculate_recommendation_score,
     _extract_student_skill_names,
@@ -57,6 +59,12 @@ def evaluate_opportunity_for_student(
         opportunity=opportunity
     )
 
+    # 4. Deterministic Learning Roadmap Generation
+    roadmap_result = generate_learning_roadmap(
+        missing_skills=skill_gap_result["missing_skills"],
+        deadline=opportunity.deadline
+    )
+
     return FullEvaluationResponse(
         opportunity_id=opportunity.id,
         opportunity_title=opportunity.title,
@@ -77,5 +85,6 @@ def evaluate_opportunity_for_student(
             "final_score": rec_result["final_score"],
             "breakdown": rec_result["breakdown"],
             "explanation": rec_result["explanation"]
-        }
+        },
+        roadmap=LearningRoadmapResponse.model_validate(roadmap_result)
     )

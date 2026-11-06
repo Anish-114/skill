@@ -94,6 +94,32 @@ export interface SkillGapAnalysis {
   preparation_checklist: string[];
 }
 
+export interface LearningResourceItem {
+  title: string;
+  url: string;
+  type: string; // 'docs' | 'course' | 'video'
+  free: boolean;
+  estimated_hours: number;
+}
+
+export interface RoadmapMilestone {
+  skill: string;
+  priority: number;
+  estimated_hours: number;
+  duration_label: string;
+  resources: LearningResourceItem[];
+}
+
+export interface LearningRoadmap {
+  is_feasible: boolean;
+  warning_message?: string | null;
+  total_estimated_hours: number;
+  estimated_duration: string;
+  days_until_deadline?: number | null;
+  recommended_focus_skills: string[];
+  milestones: RoadmapMilestone[];
+}
+
 export interface FullEvaluation {
   opportunity_id: number;
   opportunity_title: string;
@@ -104,6 +130,7 @@ export interface FullEvaluation {
     breakdown: RecommendationScoreBreakdown;
     explanation: string;
   };
+  roadmap?: LearningRoadmap;
 }
 
 export interface SavedOpportunityItem {
