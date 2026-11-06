@@ -61,6 +61,7 @@ app.add_middleware(
 
 # Mount API v1 Routes (High priority)
 app.include_router(api_v1_router, prefix=settings.API_V1_STR)
+app.include_router(api_v1_router, prefix="/api")
 
 # Re-exports for backwards compatibility
 from app.api.v1.opportunities import list_opportunities
@@ -101,40 +102,6 @@ def root():
     }
 
 
-# Static Files & SPA Routing
-static_dir = Path(__file__).parent / "static"
-if not static_dir.exists():
-    alt_static = Path("/app/backend/app/static")
-    if alt_static.exists():
-        static_dir = alt_static
-
-index_html_path = static_dir / "index.html"
-
-if static_dir.exists() and index_html_path.exists():
-    logger.info(f"Serving frontend SPA from static directory: {static_dir}")
-    assets_dir = static_dir / "assets"
-    if assets_dir.exists():
-        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
-
-    @app.get("/", tags=["SPA"], include_in_schema=False)
-    def serve_spa_root():
-        return FileResponse(str(index_html_path))
-
-    @app.get("/{full_path:path}", include_in_schema=False)
-    def serve_spa_catch_all(full_path: str):
-        # Do not intercept API, health, or swagger docs
-        if full_path.startswith("api/") or full_path in ["health", "docs", "openapi.json", "redoc"]:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource Not Found")
-
-        file_path = static_dir / full_path
-        if file_path.is_file():
-            return FileResponse(str(file_path))
-
-        if index_html_path.exists():
-            return FileResponse(str(index_html_path))
-
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Page Not Found")
-else:
-    @app.get("/", tags=["Health"])
-    def serve_root_api():
-        return root()
+@app.get("/api/info", tags=["Health"])
+def api_info():
+    return root()
