@@ -1,10 +1,12 @@
 ---
-title: SkillBridge AI
-emoji: 🎯
+title: Skillbridge Ai
+emoji: 🚀
 colorFrom: indigo
-colorTo: green
+colorTo: blue
 sdk: gradio
+sdk_version: 4.44.0
 app_file: app.py
+pinned: false
 ---
 
 # SkillBridge AI — Full-Stack Platform

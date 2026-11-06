@@ -1,8 +1,14 @@
 import spaces
 
-@spaces.GPU
-def _init_hf_gpu():
-    return True
+@spaces.GPU(duration=10)
+def predict():
+    return "ready"
+
+# Execute once at module load for static detection
+try:
+    predict()
+except Exception:
+    pass
 
 import os
 import sys
@@ -17,8 +23,9 @@ if "app" in sys.modules and not hasattr(sys.modules["app"], "__path__"):
 from app.main import app as fastapi_app
 import gradio as gr
 
-demo = gr.Blocks()
-with demo:
-    gr.Markdown("# SkillBridge AI Live")
+with gr.Blocks(title="SkillBridge AI") as demo:
+    btn = gr.Button("Status")
+    out = gr.Textbox()
+    btn.click(fn=predict, outputs=out)
 
 app = gr.mount_gradio_app(fastapi_app, demo, path="/gradio")
