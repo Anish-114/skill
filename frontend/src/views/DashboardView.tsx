@@ -32,13 +32,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [minScore, setMinScore] = useState<number>(40);
 
-  const categories = ['all', 'Hackathon', 'Coding Contest', 'Hiring Challenge'];
+  const categories = ['all', 'Hackathon', 'Skill Competition', 'Coding Contest', 'Hiring Challenge'];
 
   // Filter recommendations
   const filtered = recommendations.filter((r) => {
+    const normalizedOppCat = r.opportunity.category.toLowerCase().replace(/[\s_-]+/g, '');
+    const normalizedSelectedCat = selectedCategory.toLowerCase().replace(/[\s_-]+/g, '');
     const matchesCat =
       selectedCategory === 'all' ||
-      r.opportunity.category.toLowerCase().includes(selectedCategory.toLowerCase());
+      normalizedOppCat.includes(normalizedSelectedCat) ||
+      normalizedSelectedCat.includes(normalizedOppCat);
     const matchesScore = r.final_score >= minScore;
     return matchesCat && matchesScore;
   });

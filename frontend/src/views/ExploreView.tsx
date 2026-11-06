@@ -23,7 +23,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedMode, setSelectedMode] = useState('all');
 
-  const categories = ['all', 'Hackathon', 'Coding Contest', 'Hiring Challenge'];
+  const categories = ['all', 'Hackathon', 'Skill Competition', 'Coding Contest', 'Hiring Challenge'];
   const modes = ['all', 'Online', 'Hybrid', 'In-Person'];
 
   const nowTimestamp = Date.now() - 24 * 3600 * 1000;
@@ -42,9 +42,12 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         opp.organizer.toLowerCase().includes(searchTerm.toLowerCase()) ||
         opp.required_skills.some((s) => s.toLowerCase().includes(searchTerm.toLowerCase()));
 
+      const normalizedOppCat = opp.category.toLowerCase().replace(/[\s_-]+/g, '');
+      const normalizedSelectedCat = selectedCategory.toLowerCase().replace(/[\s_-]+/g, '');
       const matchesCat =
         selectedCategory === 'all' ||
-        opp.category.toLowerCase().includes(selectedCategory.toLowerCase());
+        normalizedOppCat.includes(normalizedSelectedCat) ||
+        normalizedSelectedCat.includes(normalizedOppCat);
 
       const matchesMode =
         selectedMode === 'all' ||

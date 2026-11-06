@@ -61,8 +61,8 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
         <div className="flex items-start justify-between gap-3 mb-2.5">
           {/* Category & Mode Badges */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-              {opportunity.category}
+            <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 capitalize">
+              {opportunity.category.replace(/_/g, ' ')}
             </span>
             <span
               className={cn(

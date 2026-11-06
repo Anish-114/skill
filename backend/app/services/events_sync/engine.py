@@ -12,6 +12,7 @@ from .unstop import UnstopFetcher
 from .mlh import MLHFetcher
 from .sih import SIHFetcher
 from .hack2skill import Hack2skillFetcher
+from .skill_india import SkillIndiaFetcher
 
 logger = logging.getLogger(__name__)
 
@@ -29,12 +30,13 @@ class EventSyncEngine:
         "mlh": MLHFetcher,
         "sih": SIHFetcher,
         "hack2skill": Hack2skillFetcher,
+        "skill_india": SkillIndiaFetcher,
     }
 
     def __init__(self, sources: Optional[List[str]] = None):
         if sources is None:
             # Parse configured sources from comma-separated string
-            raw = getattr(settings, "EVENTS_SYNC_SOURCES", "devfolio,unstop")
+            raw = getattr(settings, "EVENTS_SYNC_SOURCES", "devfolio,unstop,skill_india")
             self.source_keys = [s.strip().lower() for s in raw.split(",") if s.strip()]
         else:
             self.source_keys = [s.strip().lower() for s in sources if s.strip()]

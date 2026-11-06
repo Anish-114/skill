@@ -4,6 +4,7 @@ from .unstop import UnstopFetcher
 from .mlh import MLHFetcher
 from .sih import SIHFetcher
 from .hack2skill import Hack2skillFetcher
+from .skill_india import SkillIndiaFetcher
 from .engine import EventSyncEngine
 
 __all__ = [
@@ -14,5 +15,6 @@ __all__ = [
     "MLHFetcher",
     "SIHFetcher",
     "Hack2skillFetcher",
+    "SkillIndiaFetcher",
     "EventSyncEngine",
 ]

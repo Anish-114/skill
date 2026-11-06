@@ -1,0 +1,93 @@
+[
+  {
+    "title": "IndiaSkills National Competition 2025-26 - Digital & ICT Skills",
+    "organizer": "National Skill Development Corporation (NSDC) & MSDE",
+    "category": "skill_competition",
+    "description": "IndiaSkills is the country's premier biennial skill competition organized by NSDC and the Ministry of Skill Development and Entrepreneurship (MSDE). Competitors compete in emerging technologies including Cloud Computing, Cyber Security, Web Technologies, and Mobile Applications Development to qualify for Team India at WorldSkills 2026 in Shanghai.",
+    "official_url": "https://www.worldskillsindia.co.in/indiaskills.php",
+    "source": "Skill India",
+    "external_id": "indiaskills-2025-ict",
+    "start_date": "2026-08-01 09:00:00",
+    "deadline": "2026-12-15 23:59:00",
+    "mode": "In-Person",
+    "location": "Regional & National Skill Centers (Delhi, Bengaluru, Mumbai, Kolkata)",
+    "required_skills": [
+      "Cloud Computing",
+      "Cyber Security",
+      "Web Technologies",
+      "Linux",
+      "Python",
+      "DevOps"
+    ],
+    "prize_pool": "Gold, Silver, Bronze Medals, Cash Prizes & Represent Team India at WorldSkills 2026",
+    "eligibility_criteria": {
+      "degrees": ["B.Tech", "B.E.", "BCA", "MCA", "Diploma", "ITI", "Any Youth"],
+      "branches": ["Computer Science", "Information Technology", "Electronics", "ALL"],
+      "allowed_years": [1, 2, 3, 4],
+      "max_age": 22,
+      "allowed_countries": ["India"],
+      "notes": "Must be born on or after 1 January 2002 as per WorldSkills international eligibility norms."
+    },
+    "is_active": true
+  },
+  {
+    "title": "IndiaSkills 2025-26 - Industry 4.0 & Advanced Manufacturing",
+    "organizer": "National Skill Development Corporation (NSDC) & MSDE",
+    "category": "skill_competition",
+    "description": "National vocational engineering challenge focusing on Industry 4.0 technologies, Autonomous Mobile Robotics, Additive Manufacturing (3D Printing), and Mechanical Engineering CAD. Organized by WorldSkills India under MSDE.",
+    "official_url": "https://www.worldskillsindia.co.in",
+    "source": "Skill India",
+    "external_id": "indiaskills-2025-advanced-mfg",
+    "start_date": "2026-08-01 09:00:00",
+    "deadline": "2026-12-20 23:59:00",
+    "mode": "In-Person",
+    "location": "Designated WorldSkills India Nodal Centers Across India",
+    "required_skills": [
+      "Robotics",
+      "Industry 4.0",
+      "CAD",
+      "Additive Manufacturing",
+      "IoT",
+      "Automation"
+    ],
+    "prize_pool": "National Skill Medals, Industry Apprenticeships & WorldSkills 2026 Qualifier",
+    "eligibility_criteria": {
+      "degrees": ["B.Tech", "B.E.", "Diploma", "Polytechnic", "ITI"],
+      "branches": ["Mechanical", "Mechatronics", "Electrical", "Robotics", "ALL"],
+      "allowed_years": [1, 2, 3, 4],
+      "max_age": 22,
+      "allowed_countries": ["India"],
+      "notes": "Participants must demonstrate hands-on hardware prototype or CAD/CAM assembly."
+    },
+    "is_active": true
+  },
+  {
+    "title": "Skill India Digital Hub (SIDH) Innovation Challenge",
+    "organizer": "Ministry of Skill Development and Entrepreneurship (MSDE)",
+    "category": "skill_competition",
+    "description": "Nationwide digital challenge hosted under Skill India Digital Hub (SIDH) for young developers, vocational trainees, and technical students to design solutions for digital credentialing, localized skills assessment, and apprenticeship matching.",
+    "official_url": "https://www.skillindiadigital.gov.in",
+    "source": "Skill India",
+    "external_id": "sidh-innovation-2026",
+    "start_date": "2026-09-01 10:00:00",
+    "deadline": "2026-11-30 23:59:00",
+    "mode": "Online",
+    "location": "Online / Virtual Evaluation",
+    "required_skills": [
+      "Full-Stack Development",
+      "Python",
+      "React",
+      "FastAPI",
+      "Digital Public Infrastructure"
+    ],
+    "prize_pool": "Certificates of National Excellence, MSDE Incubation Grants & Felicitations",
+    "eligibility_criteria": {
+      "degrees": ["B.Tech", "B.E.", "BCA", "MCA", "B.Sc", "Diploma", "Any Trainee"],
+      "branches": ["ALL"],
+      "allowed_years": [1, 2, 3, 4],
+      "allowed_countries": ["India"],
+      "notes": "Registered user profile on Skill India Digital Hub (SIDH) required for submission."
+    },
+    "is_active": true
+  }
+]

@@ -80,8 +80,8 @@ export const SavedView: React.FC<SavedViewProps> = ({
               >
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-2">
-                    <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-brand-500/10 text-brand-300 border border-brand-500/20">
-                      {opp.category}
+                    <span className="text-xs px-2.5 py-0.5 rounded-full font-medium bg-brand-500/10 text-brand-300 border border-brand-500/20 capitalize">
+                      {opp.category.replace(/_/g, ' ')}
                     </span>
 
                     <span className="text-[11px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">

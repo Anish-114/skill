@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     # Events Synchronization Configuration
     EVENTS_SYNC_TOKEN: str = "skillbridge-events-sync-secret-token"
     EVENTS_SYNC_INTERVAL_HOURS: int = 6
-    EVENTS_SYNC_SOURCES: str = "devfolio,unstop"
+    EVENTS_SYNC_SOURCES: str = "devfolio,unstop,skill_india"
 
     # Environment & Seeding controls
     ENVIRONMENT: str = "development"
