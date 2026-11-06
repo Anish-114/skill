@@ -1,3 +1,9 @@
+import spaces
+
+@spaces.GPU
+def _init_hf_gpu():
+    return True
+
 import os
 import sys
 
@@ -7,15 +13,6 @@ if BACKEND_DIR not in sys.path:
 
 if "app" in sys.modules and not hasattr(sys.modules["app"], "__path__"):
     del sys.modules["app"]
-
-# Satisfy ZeroGPU requirement
-try:
-    import spaces
-    @spaces.GPU
-    def zero_gpu_dummy():
-        return True
-except Exception:
-    pass
 
 from app.main import app as fastapi_app
 import gradio as gr
