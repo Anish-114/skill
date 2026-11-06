@@ -5,7 +5,12 @@ from app.schemas.opportunity import OpportunityResponse
 
 
 class SavedOpportunityCreate(BaseModel):
-    status: Optional[str] = Field("saved", description="saved | applied | in_progress | shortlisted | archived")
+    status: Optional[str] = Field("saved", description="saved | applied | in_progress | shortlisted | selected | rejected | archived")
+    notes: Optional[str] = None
+
+
+class SavedOpportunityUpdate(BaseModel):
+    status: Optional[str] = Field(None, description="saved | applied | in_progress | shortlisted | selected | rejected | archived")
     notes: Optional[str] = None
 
 

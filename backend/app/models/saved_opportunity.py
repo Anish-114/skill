@@ -31,7 +31,7 @@ class SavedOpportunity(Base):
         index=True
     )
     
-    # Tracking status: "saved", "applied", "in_progress", "shortlisted", "archived"
+    # Tracking status: "saved", "applied", "in_progress", "shortlisted", "selected", "rejected", "archived"
     status: Mapped[str] = mapped_column(
         String(50), 
         default="saved", 

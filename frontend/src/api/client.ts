@@ -177,6 +177,14 @@ export const saveOpportunity = async (
   return response.data;
 };
 
+export const updateSavedOpportunity = async (
+  oppId: number,
+  payload: { status?: string; notes?: string }
+): Promise<SavedOpportunityItem> => {
+  const response = await apiClient.post<SavedOpportunityItem>(`/saved-opportunities/${oppId}`, payload);
+  return response.data;
+};
+
 export const unsaveOpportunity = async (oppId: number): Promise<{ message: string; opportunity_id: number }> => {
   const response = await apiClient.delete(`/saved-opportunities/${oppId}`);
   return response.data;

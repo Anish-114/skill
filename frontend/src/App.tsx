@@ -21,6 +21,7 @@ import {
   getSavedOpportunities,
   evaluateOpportunity,
   toggleSaveOpportunity,
+  saveOpportunity,
   checkHealth,
   getToken,
   logout,
@@ -199,6 +200,62 @@ export const App: React.FC = () => {
     getRecommendations().then((recs) => setRecommendations(recs));
   };
 
+  const getSavedStatus = useCallback(
+    (oppId: number): string | undefined => {
+      return savedList.find((s) => s.opportunity_id === oppId)?.status;
+    },
+    [savedList]
+  );
+
+  const handleMarkApplied = async (oppId: number) => {
+    const existing = savedList.find((s) => s.opportunity_id === oppId);
+    try {
+      // Optimistic UI updates
+      setSavedIds((prev) => new Set(prev).add(oppId));
+      if (existing) {
+        setSavedList((prev) =>
+          prev.map((s) =>
+            s.opportunity_id === oppId ? { ...s, status: 'applied' } : s
+          )
+        );
+      } else {
+        const opp = opportunities.find((o) => o.id === oppId);
+        if (opp) {
+          setSavedList((prev) => [
+            {
+              id: Date.now(),
+              user_id: profile?.user_id || 1,
+              opportunity_id: oppId,
+              status: 'applied',
+              saved_at: new Date().toISOString(),
+              opportunity: opp,
+            },
+            ...prev,
+          ]);
+        }
+      }
+
+      await toggleSaveOpportunity(oppId, false); // ensure saved
+      const updated = await saveOpportunity(oppId, 'applied');
+      setSavedList((prev) =>
+        prev.map((s) => (s.opportunity_id === oppId ? updated : s))
+      );
+    } catch (err) {
+      console.error('Failed to mark as applied:', err);
+      const refreshed = await getSavedOpportunities();
+      setSavedList(refreshed);
+      setSavedIds(new Set(refreshed.map((s) => s.opportunity_id)));
+    }
+  };
+
+  const handleSavedItemUpdated = (updatedItem: SavedOpportunityItem) => {
+    setSavedList((prev) =>
+      prev.map((s) =>
+        s.opportunity_id === updatedItem.opportunity_id ? updatedItem : s
+      )
+    );
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
       {/* Top Navigation */}
@@ -223,6 +280,8 @@ export const App: React.FC = () => {
             onEvaluate={handleOpenEvaluationModal}
             onToggleSave={handleToggleSave}
             savedIds={savedIds}
+            getSavedStatus={getSavedStatus}
+            onMarkApplied={handleMarkApplied}
           />
         )}
 
@@ -233,6 +292,8 @@ export const App: React.FC = () => {
             onEvaluate={handleOpenEvaluationModal}
             onToggleSave={handleToggleSave}
             savedIds={savedIds}
+            getSavedStatus={getSavedStatus}
+            onMarkApplied={handleMarkApplied}
           />
         )}
 
@@ -242,6 +303,7 @@ export const App: React.FC = () => {
             loading={loadingSaved}
             onEvaluate={handleOpenEvaluationModal}
             onRemoveSave={(id) => handleToggleSave(id)}
+            onItemUpdated={handleSavedItemUpdated}
           />
         )}
 
@@ -259,6 +321,13 @@ export const App: React.FC = () => {
         evaluation={selectedEvaluation}
         onClose={() => setIsModalOpen(false)}
         officialUrl={evaluatingUrl}
+        onMarkApplied={handleMarkApplied}
+        isApplied={
+          selectedEvaluation
+            ? getSavedStatus(selectedEvaluation.opportunity_id)?.toLowerCase() ===
+              'applied'
+            : false
+        }
       />
 
       {/* Authentication / Switch User Modal */}

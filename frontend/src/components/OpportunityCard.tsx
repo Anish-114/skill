@@ -10,6 +10,7 @@ import {
   XCircle,
   Zap,
   Award,
+  Check,
 } from 'lucide-react';
 import { Opportunity, OpportunityRecommendation } from '../types';
 import { cn } from '../utils/cn';
@@ -21,6 +22,8 @@ interface OpportunityCardProps {
   onEvaluate: (oppId: number) => void;
   onToggleSave: (oppId: number) => void;
   isSaved?: boolean;
+  savedStatus?: string;
+  onMarkApplied?: (oppId: number) => void;
 }
 
 export const OpportunityCard: React.FC<OpportunityCardProps> = ({
@@ -29,6 +32,8 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
   onEvaluate,
   onToggleSave,
   isSaved,
+  savedStatus,
+  onMarkApplied,
 }) => {
   // Format deadline date in IST and calculate countdown
   const { label: countdownLabel, isUrgent } = getDeadlineCountdown(opportunity.deadline);
@@ -41,6 +46,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
 
   // Determine readiness score
   const readiness = recommendation ? recommendation.readiness_score : null;
+  const isApplied = savedStatus?.toLowerCase() === 'applied';
 
   return (
     <div className="glass-card rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden group">
@@ -84,22 +90,46 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
             )}
           </div>
 
-          {/* Bookmark Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSave(opportunity.id);
-            }}
-            className={cn(
-              'p-2 rounded-xl transition-all',
-              isSaved
-                ? 'bg-brand-500/20 text-brand-400 border border-brand-500/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent'
+          {/* Action Buttons: Mark Applied + Bookmark */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {onMarkApplied && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onMarkApplied(opportunity.id);
+                }}
+                disabled={isApplied}
+                className={cn(
+                  'px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1 transition-all shadow-sm',
+                  isApplied
+                    ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 cursor-default'
+                    : 'bg-slate-800 hover:bg-indigo-600/30 text-slate-300 hover:text-white border border-slate-700 hover:border-indigo-500/50 active:scale-95'
+                )}
+                title={isApplied ? 'Application submitted' : 'Quick mark as Applied (auto-bookmarks)'}
+              >
+                <Check className="w-3 h-3 text-indigo-400" />
+                <span>{isApplied ? 'Applied' : 'Mark Applied'}</span>
+              </button>
             )}
-            title={isSaved ? 'Remove bookmark' : 'Bookmark opportunity'}
-          >
-            <Bookmark className={cn('w-4 h-4', isSaved && 'fill-brand-400')} />
-          </button>
+
+            {/* Bookmark Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSave(opportunity.id);
+              }}
+              className={cn(
+                'p-2 rounded-xl transition-all',
+                isSaved
+                  ? 'bg-brand-500/20 text-brand-400 border border-brand-500/30'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent'
+              )}
+              title={isSaved ? 'Remove bookmark' : 'Bookmark opportunity'}
+            >
+              <Bookmark className={cn('w-4 h-4', isSaved && 'fill-brand-400')} />
+            </button>
+          </div>
         </div>
 
         {/* Title */}

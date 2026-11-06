@@ -7,11 +7,22 @@ from app.db.session import get_db
 from app.models import Opportunity, SavedOpportunity, User
 from app.schemas.saved_opportunity import (
     SavedOpportunityCreate,
+    SavedOpportunityUpdate,
     SavedOpportunityResponse,
 )
 from app.schemas.opportunity import OpportunityResponse
 
 router = APIRouter(prefix="/saved-opportunities", tags=["Saved Opportunities"])
+
+VALID_SAVED_STATUSES = {
+    "saved",
+    "applied",
+    "in_progress",
+    "shortlisted",
+    "selected",
+    "rejected",
+    "archived",
+}
 
 
 @router.get("", response_model=List[SavedOpportunityResponse])
@@ -22,8 +33,8 @@ def list_saved_opportunities(
 ):
     """List all bookmarked/saved opportunities for the current student."""
     query = db.query(SavedOpportunity).filter(SavedOpportunity.user_id == current_user.id)
-    if status_filter and isinstance(status_filter, str):
-        query = query.filter(SavedOpportunity.status == status_filter)
+    if status_filter and isinstance(status_filter, str) and status_filter.strip().lower() != "all":
+        query = query.filter(SavedOpportunity.status == status_filter.strip().lower())
 
     saved_items = query.order_by(SavedOpportunity.saved_at.desc()).all()
 
@@ -45,19 +56,36 @@ def list_saved_opportunities(
 
 
 @router.post("/{opportunity_id}", response_model=SavedOpportunityResponse, status_code=status.HTTP_201_CREATED)
-def save_opportunity(
+@router.put("/{opportunity_id}", response_model=SavedOpportunityResponse)
+@router.patch("/{opportunity_id}", response_model=SavedOpportunityResponse)
+def save_or_update_opportunity(
     opportunity_id: int,
     payload: Optional[SavedOpportunityCreate] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Bookmark an opportunity or update its tracking status/notes."""
+    """
+    Bookmark an opportunity or update its tracking status and notes.
+    Enforces user ownership (can only modify own saved records) and validates status.
+    Allowed statuses: saved, applied, in_progress, shortlisted, selected, rejected, archived.
+    """
     opportunity = db.query(Opportunity).filter(Opportunity.id == opportunity_id).first()
     if not opportunity:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Opportunity with ID {opportunity_id} not found."
         )
+
+    # Validate status if provided
+    clean_status: Optional[str] = None
+    if payload and payload.status is not None:
+        raw_status = payload.status.strip().lower()
+        if raw_status not in VALID_SAVED_STATUSES:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid status '{payload.status}'. Allowed statuses are: {', '.join(sorted(VALID_SAVED_STATUSES))}"
+            )
+        clean_status = raw_status
 
     saved_record = (
         db.query(SavedOpportunity)
@@ -68,20 +96,19 @@ def save_opportunity(
         .first()
     )
 
-    save_status = payload.status if payload and payload.status else "saved"
-    save_notes = payload.notes if payload else None
-
     if saved_record:
-        # Update existing bookmark
-        saved_record.status = save_status
-        if save_notes is not None:
-            saved_record.notes = save_notes
+        # Update existing record
+        if clean_status is not None:
+            saved_record.status = clean_status
+        if payload and payload.notes is not None:
+            saved_record.notes = payload.notes
     else:
+        # Create new record
         saved_record = SavedOpportunity(
             user_id=current_user.id,
             opportunity_id=opportunity_id,
-            status=save_status,
-            notes=save_notes
+            status=clean_status or "saved",
+            notes=payload.notes if payload else None
         )
         db.add(saved_record)
 

@@ -19,6 +19,8 @@ interface DashboardViewProps {
   onEvaluate: (oppId: number) => void;
   onToggleSave: (oppId: number) => void;
   savedIds: Set<number>;
+  getSavedStatus?: (oppId: number) => string | undefined;
+  onMarkApplied?: (oppId: number) => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -28,6 +30,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onEvaluate,
   onToggleSave,
   savedIds,
+  getSavedStatus,
+  onMarkApplied,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [minScore, setMinScore] = useState<number>(40);
@@ -160,6 +164,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               onEvaluate={onEvaluate}
               onToggleSave={onToggleSave}
               isSaved={savedIds.has(rec.opportunity.id)}
+              savedStatus={getSavedStatus?.(rec.opportunity.id)}
+              onMarkApplied={onMarkApplied}
             />
           ))}
         </div>

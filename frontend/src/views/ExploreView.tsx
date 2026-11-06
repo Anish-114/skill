@@ -10,6 +10,8 @@ interface ExploreViewProps {
   onEvaluate: (oppId: number) => void;
   onToggleSave: (oppId: number) => void;
   savedIds: Set<number>;
+  getSavedStatus?: (oppId: number) => string | undefined;
+  onMarkApplied?: (oppId: number) => void;
 }
 
 export const ExploreView: React.FC<ExploreViewProps> = ({
@@ -18,6 +20,8 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   onEvaluate,
   onToggleSave,
   savedIds,
+  getSavedStatus,
+  onMarkApplied,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -150,6 +154,8 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               onEvaluate={onEvaluate}
               onToggleSave={onToggleSave}
               isSaved={savedIds.has(opp.id)}
+              savedStatus={getSavedStatus?.(opp.id)}
+              onMarkApplied={onMarkApplied}
             />
           ))}
         </div>

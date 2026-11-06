@@ -20,6 +20,8 @@ interface EvaluationModalProps {
   isOpen: boolean;
   onClose: () => void;
   officialUrl?: string;
+  onMarkApplied?: (oppId: number) => void;
+  isApplied?: boolean;
 }
 
 export const EvaluationModal: React.FC<EvaluationModalProps> = ({
@@ -27,6 +29,8 @@ export const EvaluationModal: React.FC<EvaluationModalProps> = ({
   isOpen,
   onClose,
   officialUrl,
+  onMarkApplied,
+  isApplied,
 }) => {
   if (!isOpen || !evaluation) return null;
 
@@ -272,17 +276,37 @@ export const EvaluationModal: React.FC<EvaluationModalProps> = ({
             Close Report
           </button>
 
-          {officialUrl && (
-            <a
-              href={officialUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 shadow-lg shadow-brand-500/25 transition-all"
-            >
-              <span>Apply on Official Website</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          )}
+          <div className="flex items-center gap-2">
+            {onMarkApplied && (
+              <button
+                type="button"
+                disabled={isApplied}
+                onClick={() => onMarkApplied(evaluation.opportunity_id)}
+                className={cn(
+                  'flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all border shadow-sm',
+                  isApplied
+                    ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30 cursor-default'
+                    : 'bg-slate-800 hover:bg-indigo-600/30 text-slate-300 hover:text-white border-slate-700 hover:border-indigo-500/50 active:scale-95'
+                )}
+                title={isApplied ? 'Application already recorded' : 'Quick mark as Applied (auto-bookmarks if needed)'}
+              >
+                <CheckCircle2 className={cn('w-3.5 h-3.5', isApplied ? 'text-indigo-400' : 'text-slate-400')} />
+                <span>{isApplied ? 'Applied ✓' : 'Mark as Applied'}</span>
+              </button>
+            )}
+
+            {officialUrl && (
+              <a
+                href={officialUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 shadow-lg shadow-brand-500/25 transition-all"
+              >
+                <span>Apply on Official Website</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </div>
