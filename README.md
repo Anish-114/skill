@@ -2,9 +2,9 @@
 title: SkillBridge AI
 emoji: 🎯
 colorFrom: indigo
-colorTo: emerald
-sdk: docker
-app_port: 7860
+colorTo: green
+sdk: gradio
+app_file: app.py
 ---
 
 # SkillBridge AI — Full-Stack Platform
