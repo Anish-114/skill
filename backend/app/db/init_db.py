@@ -1,0 +1,161 @@
+import logging
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.db.session import engine, SessionLocal
+from app.models import (
+    Base,
+    User,
+    StudentProfile,
+    Skill,
+    StudentSkill,
+    Opportunity,
+    SavedOpportunity,
+)
+from app.db.seed_data import SAMPLE_SKILLS, SAMPLE_OPPORTUNITIES, SAMPLE_USERS
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def init_db(db: Session = None) -> None:
+    """
+    Initializes database schema and populates essential seed data
+    if tables are currently empty.
+    """
+    logger.info("Ensuring database tables exist...")
+    Base.metadata.create_all(bind=engine)
+
+    close_session = False
+    if db is None:
+        db = SessionLocal()
+        close_session = True
+
+    try:
+        # 1. Seed Skills Taxonomy
+        existing_skills_count = db.query(Skill).count()
+        if existing_skills_count == 0:
+            logger.info("Seeding skills taxonomy...")
+            for skill_data in SAMPLE_SKILLS:
+                skill = Skill(
+                    name=skill_data["name"],
+                    category=skill_data["category"]
+                )
+                db.add(skill)
+            db.commit()
+            logger.info(f"Successfully seeded {len(SAMPLE_SKILLS)} skills.")
+        else:
+            logger.info(f"Skills already seeded ({existing_skills_count} skills present).")
+
+        # Map skill names to Skill objects for fast lookup
+        skills_map = {skill.name: skill for skill in db.query(Skill).all()}
+
+        # 2. Seed Opportunities
+        existing_opps_count = db.query(Opportunity).count()
+        if existing_opps_count == 0:
+            logger.info("Seeding opportunities catalogue...")
+            for opp_data in SAMPLE_OPPORTUNITIES:
+                opportunity = Opportunity(
+                    title=opp_data["title"],
+                    organizer=opp_data["organizer"],
+                    category=opp_data["category"],
+                    description=opp_data["description"],
+                    required_skills=opp_data["required_skills"],
+                    eligibility_criteria=opp_data["eligibility_criteria"],
+                    deadline=opp_data["deadline"],
+                    mode=opp_data["mode"],
+                    location=opp_data.get("location"),
+                    official_url=opp_data["official_url"],
+                    source=opp_data["source"],
+                    prize_pool=opp_data.get("prize_pool"),
+                    is_active=opp_data.get("is_active", True)
+                )
+                db.add(opportunity)
+            db.commit()
+            logger.info(f"Successfully seeded {len(SAMPLE_OPPORTUNITIES)} opportunities.")
+        else:
+            logger.info(f"Opportunities already present ({existing_opps_count} opportunities).")
+
+        # 3. Seed Sample Student Users & Profiles
+        existing_users_count = db.query(User).count()
+        if existing_users_count == 0:
+            logger.info("Seeding sample user & student profile...")
+            # Use safe password hashing with fallback if passlib/bcrypt encounters runtime issues
+            try:
+                from app.core.security import get_password_hash
+            except Exception:
+                get_password_hash = lambda pwd: f"$fakehash${pwd}"
+
+            for user_data in SAMPLE_USERS:
+                user = User(
+                    email=user_data["email"],
+                    hashed_password=get_password_hash(user_data["password"]),
+                    full_name=user_data["full_name"],
+                    is_active=user_data["is_active"],
+                    is_superuser=user_data["is_superuser"]
+                )
+                db.add(user)
+                db.flush()  # Populates user.id
+
+                # Create Student Profile
+                prof_data = user_data["profile"]
+                profile = StudentProfile(
+                    user_id=user.id,
+                    phone=prof_data.get("phone"),
+                    college_name=prof_data.get("college_name"),
+                    degree=prof_data["degree"],
+                    branch=prof_data["branch"],
+                    year=prof_data["year"],
+                    cgpa=prof_data.get("cgpa"),
+                    experience_level=prof_data["experience_level"],
+                    raw_bio=prof_data.get("raw_bio"),
+                    github_url=prof_data.get("github_url"),
+                    linkedin_url=prof_data.get("linkedin_url"),
+                    portfolio_url=prof_data.get("portfolio_url")
+                )
+                db.add(profile)
+                db.flush()  # Populates profile.id
+
+                # Link Student Skills
+                for skill_info in prof_data.get("skills", []):
+                    skill_obj = skills_map.get(skill_info["name"])
+                    if not skill_obj:
+                        skill_obj = Skill(name=skill_info["name"], category="General")
+                        db.add(skill_obj)
+                        db.flush()
+                        skills_map[skill_obj.name] = skill_obj
+
+                    student_skill = StudentSkill(
+                        student_profile_id=profile.id,
+                        skill_id=skill_obj.id,
+                        proficiency_level=skill_info.get("proficiency_level", "Intermediate"),
+                        years_of_experience=skill_info.get("years_of_experience", 1.0),
+                        verified=skill_info.get("verified", False)
+                    )
+                    db.add(student_skill)
+
+                # Save a sample bookmarked opportunity for this user
+                first_opp = db.query(Opportunity).first()
+                if first_opp:
+                    saved_opp = SavedOpportunity(
+                        user_id=user.id,
+                        opportunity_id=first_opp.id,
+                        status="saved",
+                        notes="Preparing team submission for SIH 2026. Reviewing AI problem statements."
+                    )
+                    db.add(saved_opp)
+
+            db.commit()
+            logger.info("Successfully seeded sample user profile, skills, and saved opportunities.")
+
+    except Exception as exc:
+        db.rollback()
+        logger.error(f"Error during database initialization: {exc}", exc_info=True)
+        raise exc
+    finally:
+        if close_session:
+            db.close()
+
+
+if __name__ == "__main__":
+    init_db()
