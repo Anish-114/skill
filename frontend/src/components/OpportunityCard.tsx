@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Opportunity, OpportunityRecommendation } from '../types';
 import { cn } from '../utils/cn';
+import { formatToIST, getDeadlineCountdown } from '../utils/date';
 
 interface OpportunityCardProps {
   recommendation?: OpportunityRecommendation;
@@ -29,12 +30,9 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
   onToggleSave,
   isSaved,
 }) => {
-  // Format deadline date and countdown
-  const deadlineDate = opportunity.deadline ? new Date(opportunity.deadline) : null;
-  const now = new Date();
-  const diffDays = deadlineDate
-    ? Math.ceil((deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-    : null;
+  // Format deadline date in IST and calculate countdown
+  const { label: countdownLabel, isUrgent } = getDeadlineCountdown(opportunity.deadline);
+  const formattedIST = formatToIST(opportunity.deadline);
 
   const finalScore = recommendation ? recommendation.final_score : null;
   const eligStatus = recommendation
@@ -211,12 +209,19 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
 
       {/* Card Footer: Deadline & Action Buttons */}
       <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-        {/* Deadline countdown */}
-        <div className="flex items-center gap-1.5 text-xs text-slate-400">
-          <Calendar className="w-3.5 h-3.5 text-slate-500" />
-          <span className={cn(diffDays !== null && diffDays <= 7 ? 'text-amber-400 font-medium' : '')}>
-            {diffDays === null ? 'Open / Ongoing' : diffDays > 0 ? `${diffDays}d left` : diffDays === 0 ? 'Today' : 'Deadline passed'}
-          </span>
+        {/* Deadline countdown & exact IST date */}
+        <div className="flex flex-col gap-0.5 text-xs text-slate-400 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+            <span className={cn('font-medium', isUrgent ? 'text-amber-400' : 'text-slate-300')}>
+              {countdownLabel}
+            </span>
+          </div>
+          {opportunity.deadline && (
+            <span className="text-[10px] text-slate-400 truncate max-w-[170px]" title={formattedIST}>
+              {formattedIST}
+            </span>
+          )}
         </div>
 
         {/* Buttons */}

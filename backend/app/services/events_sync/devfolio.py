@@ -3,7 +3,7 @@ import logging
 from typing import List, Optional
 import httpx
 
-from .base import BaseEventFetcher, NormalizedEvent
+from .base import BaseEventFetcher, NormalizedEvent, parse_and_normalize_to_utc
 
 logger = logging.getLogger(__name__)
 
@@ -19,14 +19,7 @@ class DevfolioFetcher(BaseEventFetcher):
         return "Devfolio"
 
     def _parse_iso_date(self, date_str: Optional[str]) -> Optional[datetime]:
-        if not date_str:
-            return None
-        try:
-            # Handle standard ISO formats, e.g. 2026-11-14T07:30:00.000Z
-            clean_str = date_str.replace("Z", "+00:00")
-            return datetime.fromisoformat(clean_str)
-        except Exception:
-            return None
+        return parse_and_normalize_to_utc(date_str)
 
     async def fetch_events(self) -> List[NormalizedEvent]:
         events: List[NormalizedEvent] = []

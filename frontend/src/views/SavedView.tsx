@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Bookmark, ExternalLink, Trash2, Zap, Calendar, Building2, Globe } from 'lucide-react';
 import { SavedOpportunityItem } from '../types';
 import { cn } from '../utils/cn';
+import { formatToIST, getDeadlineCountdown } from '../utils/date';
 
 interface SavedViewProps {
   savedList: SavedOpportunityItem[];
@@ -69,11 +70,8 @@ export const SavedView: React.FC<SavedViewProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((item) => {
             const opp = item.opportunity;
-            const deadlineDate = opp.deadline ? new Date(opp.deadline) : null;
-            const now = new Date();
-            const diffDays = deadlineDate
-              ? Math.ceil((deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-              : null;
+            const { label: countdownLabel, isUrgent } = getDeadlineCountdown(opp.deadline);
+            const formattedIST = formatToIST(opp.deadline);
 
             return (
               <div
@@ -119,9 +117,18 @@ export const SavedView: React.FC<SavedViewProps> = ({
                 </div>
 
                 <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                    <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                    <span>{diffDays === null ? 'Open / Ongoing' : diffDays > 0 ? `${diffDays}d left` : 'Expired'}</span>
+                  <div className="flex flex-col gap-0.5 text-xs text-slate-400 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                      <span className={cn('font-medium', isUrgent ? 'text-amber-400' : 'text-slate-300')}>
+                        {countdownLabel}
+                      </span>
+                    </div>
+                    {opp.deadline && (
+                      <span className="text-[10px] text-slate-400 truncate max-w-[170px]" title={formattedIST}>
+                        {formattedIST}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-1.5">

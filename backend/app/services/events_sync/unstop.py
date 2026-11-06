@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 from bs4 import BeautifulSoup
 import httpx
 
-from .base import BaseEventFetcher, NormalizedEvent
+from .base import BaseEventFetcher, NormalizedEvent, parse_and_normalize_to_utc
 
 logger = logging.getLogger(__name__)
 
@@ -22,13 +22,7 @@ class UnstopFetcher(BaseEventFetcher):
         return "Unstop"
 
     def _parse_iso_date(self, date_str: Optional[str]) -> Optional[datetime]:
-        if not date_str:
-            return None
-        try:
-            clean_str = date_str.replace("Z", "+00:00")
-            return datetime.fromisoformat(clean_str)
-        except Exception:
-            return None
+        return parse_and_normalize_to_utc(date_str)
 
     def _clean_text(self, raw_html_or_text: Optional[str]) -> str:
         if not raw_html_or_text:

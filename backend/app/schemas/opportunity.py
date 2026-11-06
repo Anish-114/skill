@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 
 class OpportunityBase(BaseModel):
@@ -19,6 +19,17 @@ class OpportunityBase(BaseModel):
     external_id: Optional[str] = None
     prize_pool: Optional[str] = None
     is_active: bool = True
+
+    @field_serializer("deadline", "start_date", when_used="always")
+    def serialize_utc_z(self, dt: Optional[datetime]) -> Optional[str]:
+        """Serializes datetime as strict ISO 8601 UTC with Z suffix (e.g., 2026-11-10T18:29:00Z)."""
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        else:
+            dt = dt.astimezone(timezone.utc)
+        return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 class OpportunityCreate(OpportunityBase):
@@ -49,6 +60,16 @@ class OpportunityResponse(OpportunityBase):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer("created_at", "updated_at", when_used="always")
+    def serialize_timestamps_utc_z(self, dt: Optional[datetime]) -> Optional[str]:
+        if dt is None:
+            return None
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        else:
+            dt = dt.astimezone(timezone.utc)
+        return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 class OpportunityDetailResponse(OpportunityResponse):
