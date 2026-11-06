@@ -1,5 +1,7 @@
+from datetime import datetime, timezone
 from typing import List, Optional
 from fastapi import APIRouter, Depends, Query
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, get_current_student_profile
@@ -27,7 +29,11 @@ def get_personalized_recommendations(
     Ranks all active opportunities tailored to the student's degree,
     skills, academic year, and interests using the hybrid AI scoring engine.
     """
-    query = db.query(Opportunity).filter(Opportunity.is_active == True)
+    now = datetime.now(timezone.utc)
+    query = db.query(Opportunity).filter(
+        Opportunity.is_active == True,
+        or_(Opportunity.deadline == None, Opportunity.deadline >= now)
+    )
     if category and isinstance(category, str):
         query = query.filter(Opportunity.category.ilike(f"%{category}%"))
 

@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 import logging
 from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from sqlalchemy import or_, nullslast
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -87,7 +88,7 @@ def list_active_events(
     now = datetime.now(timezone.utc)
     query = db.query(Opportunity).filter(
         Opportunity.is_active == True,
-        Opportunity.deadline >= now
+        or_(Opportunity.deadline == None, Opportunity.deadline >= now)
     )
 
     if category:
@@ -96,5 +97,5 @@ def list_active_events(
     if mode:
         query = query.filter(Opportunity.mode.ilike(f"%{mode}%"))
 
-    events = query.order_by(Opportunity.deadline.asc()).offset(skip).limit(limit).all()
+    events = query.order_by(nullslast(Opportunity.deadline.asc())).offset(skip).limit(limit).all()
     return events

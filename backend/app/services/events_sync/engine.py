@@ -34,7 +34,7 @@ class EventSyncEngine:
     def __init__(self, sources: Optional[List[str]] = None):
         if sources is None:
             # Parse configured sources from comma-separated string
-            raw = getattr(settings, "EVENTS_SYNC_SOURCES", "devfolio,unstop,mlh,sih")
+            raw = getattr(settings, "EVENTS_SYNC_SOURCES", "devfolio,unstop")
             self.source_keys = [s.strip().lower() for s in raw.split(",") if s.strip()]
         else:
             self.source_keys = [s.strip().lower() for s in sources if s.strip()]
@@ -166,11 +166,13 @@ class EventSyncEngine:
                     db.add(new_opp)
                     new_count += 1
 
-            # 3. Deactivate expired events (deadline in past)
+            # 3. Deactivate expired events (where deadline is specified and has passed)
+            # Opportunities with deadline == None are treated as ongoing/open and remain active
             expired_query = (
                 db.query(Opportunity)
                 .filter(
                     Opportunity.is_active == True,
+                    Opportunity.deadline.isnot(None),
                     Opportunity.deadline < now
                 )
             )

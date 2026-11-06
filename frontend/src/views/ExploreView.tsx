@@ -52,7 +52,12 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
       return matchesSearch && matchesCat && matchesMode;
     })
-    .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
+    .sort((a, b) => {
+      if (!a.deadline && !b.deadline) return 0;
+      if (!a.deadline) return 1;
+      if (!b.deadline) return -1;
+      return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+    });
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">

@@ -18,11 +18,12 @@ class Settings(BaseSettings):
     # Events Synchronization Configuration
     EVENTS_SYNC_TOKEN: str = "skillbridge-events-sync-secret-token"
     EVENTS_SYNC_INTERVAL_HOURS: int = 6
-    EVENTS_SYNC_SOURCES: str = "devfolio,unstop,mlh,sih"
+    EVENTS_SYNC_SOURCES: str = "devfolio,unstop"
 
-    # Environment
+    # Environment & Seeding controls
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
+    SEED_SAMPLE_OPPORTUNITIES: bool = False  # Set to True only for isolated offline dev/testing
 
     class Config:
         env_file = ".env"

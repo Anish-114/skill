@@ -1,7 +1,8 @@
 import logging
-from sqlalchemy import select
+from sqlalchemy import select, or_, text
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.db.session import engine, SessionLocal
 from app.models import (
     Base,
@@ -18,6 +19,41 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def cleanup_synthetic_sih_events(db: Session) -> int:
+    """
+    Idempotent startup cleanup: Deletes synthetic SIH / Smart India Hackathon records
+    and any associated saved opportunity bookmarks.
+    Safe to execute repeatedly.
+    """
+    try:
+        sih_opps = (
+            db.query(Opportunity)
+            .filter(
+                or_(
+                    Opportunity.source == "Smart India Hackathon",
+                    Opportunity.title.ilike("%Smart India%"),
+                    Opportunity.title.ilike("%SIH 202%"),
+                    Opportunity.official_url.ilike("%sih.gov.in%")
+                )
+            )
+            .all()
+        )
+        if not sih_opps:
+            return 0
+
+        sih_ids = [o.id for o in sih_opps]
+        # Clean any bookmarks referencing these opportunities first
+        db.query(SavedOpportunity).filter(SavedOpportunity.opportunity_id.in_(sih_ids)).delete(synchronize_session=False)
+        deleted_count = db.query(Opportunity).filter(Opportunity.id.in_(sih_ids)).delete(synchronize_session=False)
+        db.commit()
+        logger.info(f"Idempotent cleanup: Successfully removed {deleted_count} synthetic SIH opportunity records.")
+        return deleted_count
+    except Exception as exc:
+        db.rollback()
+        logger.warning(f"Synthetic SIH cleanup note: {exc}")
+        return 0
+
+
 def init_db(db: Session = None) -> None:
     """
     Initializes database schema and populates essential seed data
@@ -27,7 +63,6 @@ def init_db(db: Session = None) -> None:
     Base.metadata.create_all(bind=engine)
 
     # SQLite migration helper to ensure newly added columns exist
-    from sqlalchemy import text
     try:
         with engine.connect() as conn:
             cols = [row[1] for row in conn.execute(text("PRAGMA table_info(opportunities)")).fetchall()]
@@ -49,6 +84,9 @@ def init_db(db: Session = None) -> None:
         close_session = True
 
     try:
+        # Run idempotent cleanup of synthetic SIH records
+        cleanup_synthetic_sih_events(db)
+
         # 1. Seed Skills Taxonomy
         existing_skills_count = db.query(Skill).count()
         if existing_skills_count == 0:
@@ -67,31 +105,35 @@ def init_db(db: Session = None) -> None:
         # Map skill names to Skill objects for fast lookup
         skills_map = {skill.name: skill for skill in db.query(Skill).all()}
 
-        # 2. Seed Opportunities
-        existing_opps_count = db.query(Opportunity).count()
-        if existing_opps_count == 0:
-            logger.info("Seeding opportunities catalogue...")
-            for opp_data in SAMPLE_OPPORTUNITIES:
-                opportunity = Opportunity(
-                    title=opp_data["title"],
-                    organizer=opp_data["organizer"],
-                    category=opp_data["category"],
-                    description=opp_data["description"],
-                    required_skills=opp_data["required_skills"],
-                    eligibility_criteria=opp_data["eligibility_criteria"],
-                    deadline=opp_data["deadline"],
-                    mode=opp_data["mode"],
-                    location=opp_data.get("location"),
-                    official_url=opp_data["official_url"],
-                    source=opp_data["source"],
-                    prize_pool=opp_data.get("prize_pool"),
-                    is_active=opp_data.get("is_active", True)
-                )
-                db.add(opportunity)
-            db.commit()
-            logger.info(f"Successfully seeded {len(SAMPLE_OPPORTUNITIES)} opportunities.")
+        # 2. Seed Opportunities ONLY if explicitly enabled for development/testing
+        # In production, events are exclusively synchronized from verified real sources
+        if getattr(settings, "SEED_SAMPLE_OPPORTUNITIES", False):
+            existing_opps_count = db.query(Opportunity).count()
+            if existing_opps_count == 0:
+                logger.info("SEED_SAMPLE_OPPORTUNITIES is True: Seeding sample opportunities catalogue...")
+                for opp_data in SAMPLE_OPPORTUNITIES:
+                    opportunity = Opportunity(
+                        title=opp_data["title"],
+                        organizer=opp_data["organizer"],
+                        category=opp_data["category"],
+                        description=opp_data["description"],
+                        required_skills=opp_data["required_skills"],
+                        eligibility_criteria=opp_data["eligibility_criteria"],
+                        deadline=opp_data["deadline"],
+                        mode=opp_data["mode"],
+                        location=opp_data.get("location"),
+                        official_url=opp_data["official_url"],
+                        source=opp_data["source"],
+                        prize_pool=opp_data.get("prize_pool"),
+                        is_active=opp_data.get("is_active", True)
+                    )
+                    db.add(opportunity)
+                db.commit()
+                logger.info(f"Successfully seeded {len(SAMPLE_OPPORTUNITIES)} sample opportunities.")
+            else:
+                logger.info(f"Opportunities catalogue already populated ({existing_opps_count} opportunities).")
         else:
-            logger.info(f"Opportunities already present ({existing_opps_count} opportunities).")
+            logger.info("Production mode: Sample opportunities seeding disabled. Events will populate via live sync.")
 
         # 3. Seed Sample Student Users & Profiles
         existing_users_count = db.query(User).count()
@@ -151,14 +193,14 @@ def init_db(db: Session = None) -> None:
                     )
                     db.add(student_skill)
 
-                # Save a sample bookmarked opportunity for this user
-                first_opp = db.query(Opportunity).first()
+                # Save a sample bookmarked opportunity for this user if available
+                first_opp = db.query(Opportunity).filter(Opportunity.is_active == True).first()
                 if first_opp:
                     saved_opp = SavedOpportunity(
                         user_id=user.id,
                         opportunity_id=first_opp.id,
                         status="saved",
-                        notes="Preparing team submission for SIH 2026. Reviewing AI problem statements."
+                        notes="Bookmarked for skill gap review and pre-application preparation."
                     )
                     db.add(saved_opp)
 

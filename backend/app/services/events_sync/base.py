@@ -10,6 +10,15 @@ import httpx
 logger = logging.getLogger(__name__)
 
 
+def ensure_utc(dt: Optional[datetime]) -> Optional[datetime]:
+    """Ensures a datetime object is explicitly UTC-aware to prevent SQLite offset mismatch."""
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
 @dataclass
 class NormalizedEvent:
     """
@@ -33,7 +42,8 @@ class NormalizedEvent:
 
     def to_opportunity_dict(self) -> Dict[str, Any]:
         """Convert normalized event to database dictionary representation."""
-        deadline_val = self.end_date or self.start_date or datetime.now(timezone.utc)
+        deadline_val = ensure_utc(self.end_date or self.start_date)
+        start_val = ensure_utc(self.start_date)
         return {
             "title": self.title[:255],
             "organizer": self.organizer[:255],
@@ -46,7 +56,7 @@ class NormalizedEvent:
                 "notes": f"Sourced directly from {self.source}"
             },
             "deadline": deadline_val,
-            "start_date": self.start_date,
+            "start_date": start_val,
             "mode": self.mode[:50],
             "location": self.location[:255] if self.location else None,
             "official_url": self.official_url[:512],

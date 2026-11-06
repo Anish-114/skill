@@ -69,9 +69,11 @@ export const SavedView: React.FC<SavedViewProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((item) => {
             const opp = item.opportunity;
-            const deadlineDate = new Date(opp.deadline);
+            const deadlineDate = opp.deadline ? new Date(opp.deadline) : null;
             const now = new Date();
-            const diffDays = Math.ceil((deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            const diffDays = deadlineDate
+              ? Math.ceil((deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+              : null;
 
             return (
               <div
@@ -119,7 +121,7 @@ export const SavedView: React.FC<SavedViewProps> = ({
                 <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5 text-xs text-slate-400">
                     <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                    <span>{diffDays > 0 ? `${diffDays}d left` : 'Expired'}</span>
+                    <span>{diffDays === null ? 'Open / Ongoing' : diffDays > 0 ? `${diffDays}d left` : 'Expired'}</span>
                   </div>
 
                   <div className="flex items-center gap-1.5">

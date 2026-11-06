@@ -1,7 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import or_
+from sqlalchemy import or_, nullslast
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
@@ -27,19 +27,25 @@ def list_opportunities(
     db: Session = Depends(get_db)
 ):
     """Retrieve paginated opportunities with comprehensive multi-criteria filtering."""
+    now = datetime.now(timezone.utc)
     query = db.query(Opportunity)
 
     if isinstance(is_active, bool):
         query = query.filter(Opportunity.is_active == is_active)
+        # By default for active opportunities, only return upcoming or open/ongoing (deadline NULL)
+        if is_active and min_deadline is None:
+            query = query.filter(or_(Opportunity.deadline == None, Opportunity.deadline >= now))
+
+    if min_deadline and isinstance(min_deadline, datetime):
+        # Handle offset-aware / naive conversion
+        min_dl = min_deadline if min_deadline.tzinfo else min_deadline.replace(tzinfo=timezone.utc)
+        query = query.filter(or_(Opportunity.deadline == None, Opportunity.deadline >= min_dl))
 
     if category and isinstance(category, str):
         query = query.filter(Opportunity.category.ilike(f"%{category}%"))
 
     if mode and isinstance(mode, str):
         query = query.filter(Opportunity.mode.ilike(f"%{mode}%"))
-
-    if min_deadline and isinstance(min_deadline, datetime):
-        query = query.filter(Opportunity.deadline >= min_deadline)
 
     if search and isinstance(search, str):
         search_filter = f"%{search}%"
@@ -51,7 +57,7 @@ def list_opportunities(
             )
         )
 
-    opportunities = query.order_by(Opportunity.deadline.asc()).offset(skip).limit(limit).all()
+    opportunities = query.order_by(nullslast(Opportunity.deadline.asc())).offset(skip).limit(limit).all()
     return opportunities
 
 

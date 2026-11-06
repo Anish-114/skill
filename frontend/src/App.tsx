@@ -92,10 +92,13 @@ export const App: React.FC = () => {
         min_deadline: new Date().toISOString(),
         limit: 100,
       });
-      // Sort upcoming events chronologically ascending (earliest upcoming deadline first)
-      const sorted = [...oppsData].sort(
-        (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
-      );
+      // Sort upcoming events chronologically ascending (earliest upcoming deadline first, rolling/open last)
+      const sorted = [...oppsData].sort((a, b) => {
+        if (!a.deadline && !b.deadline) return 0;
+        if (!a.deadline) return 1;
+        if (!b.deadline) return -1;
+        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+      });
       setOpportunities(sorted);
     } catch (err) {
       console.error('Failed to load opportunities:', err);

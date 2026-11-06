@@ -45,7 +45,8 @@ export interface Opportunity {
     notes?: string;
     [key: string]: any;
   };
-  deadline: string;
+  deadline?: string | null;
+  start_date?: string | null;
   mode: string; // Online | Hybrid | In-Person
   location?: string;
   official_url: string;

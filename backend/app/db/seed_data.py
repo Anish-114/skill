@@ -58,47 +58,8 @@ def get_future_date(days_from_now: int) -> datetime:
     """Helper to generate consistent deadlines in UTC."""
     return datetime.now(timezone.utc) + timedelta(days=days_from_now)
 
-# 10 Detailed and realistic sample opportunities
+# Detailed sample opportunities for isolated offline testing/development
 SAMPLE_OPPORTUNITIES: List[Dict[str, Any]] = [
-    {
-        "title": "Smart India Hackathon (SIH 2026) - Software Edition",
-        "organizer": "Ministry of Education's Innovation Cell (MIC) & AICTE",
-        "category": "Hackathon",
-        "description": "A premier nationwide platform providing students with the opportunity to solve pressing real-world problems faced by ministries, public sector undertakings, and industry partners. Problem statements span Smart Education, Healthcare, Disaster Management, Agriculture, and Cyber Security.",
-        "required_skills": [
-            "Python",
-            "React",
-            "FastAPI",
-            "Docker",
-            "Machine Learning",
-            "PostgreSQL",
-            "REST APIs"
-        ],
-        "eligibility_criteria": {
-            "degrees": ["B.Tech", "B.E.", "M.Tech", "MCA", "BCA", "B.Sc (CS)"],
-            "branches": [
-                "Computer Science & Engineering",
-                "Information Technology",
-                "Electronics & Communication",
-                "Data Science",
-                "All Engineering Branches"
-            ],
-            "allowed_years": [1, 2, 3, 4, 5],
-            "min_cgpa": 6.0,
-            "team_size": {"min": 6, "max": 6},
-            "requires_female_member": True,
-            "allowed_countries": ["India"],
-            "institution_types": ["AICTE / UGC / State Govt approved institutions"],
-            "notes": "Every team must have exactly 6 members from the same college with at least one female team member."
-        },
-        "deadline": get_future_date(28),
-        "mode": "Hybrid",
-        "location": "Multiple Nodal Centers across India / Remote Preliminary",
-        "official_url": "https://sih.gov.in",
-        "source": "Smart India Hackathon",
-        "prize_pool": "₹1,00,000 per problem statement (over 150+ winners nationwide)",
-        "is_active": True
-    },
     {
         "title": "Google Solution Challenge 2026",
         "organizer": "Google Developer Student Clubs (GDSC)",

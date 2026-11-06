@@ -43,7 +43,7 @@ class Opportunity(Base):
     # }
     eligibility_criteria: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
     
-    deadline: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
+    deadline: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
     start_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     mode: Mapped[str] = mapped_column(String(50), nullable=False, default="Online", index=True)  # Online, Hybrid, In-Person
     location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)

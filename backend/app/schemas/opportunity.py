@@ -10,7 +10,7 @@ class OpportunityBase(BaseModel):
     description: str
     required_skills: List[str] = Field(default_factory=list)
     eligibility_criteria: Dict[str, Any] = Field(default_factory=dict)
-    deadline: datetime
+    deadline: Optional[datetime] = None
     start_date: Optional[datetime] = None
     mode: str = Field("Online", description="Online | Hybrid | In-Person")
     location: Optional[str] = None

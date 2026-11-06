@@ -30,9 +30,11 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
   isSaved,
 }) => {
   // Format deadline date and countdown
-  const deadlineDate = new Date(opportunity.deadline);
+  const deadlineDate = opportunity.deadline ? new Date(opportunity.deadline) : null;
   const now = new Date();
-  const diffDays = Math.ceil((deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  const diffDays = deadlineDate
+    ? Math.ceil((deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    : null;
 
   const finalScore = recommendation ? recommendation.final_score : null;
   const eligStatus = recommendation
@@ -212,8 +214,8 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
         {/* Deadline countdown */}
         <div className="flex items-center gap-1.5 text-xs text-slate-400">
           <Calendar className="w-3.5 h-3.5 text-slate-500" />
-          <span className={cn(diffDays <= 7 ? 'text-amber-400 font-medium' : '')}>
-            {diffDays > 0 ? `${diffDays}d left` : 'Deadline passed'}
+          <span className={cn(diffDays !== null && diffDays <= 7 ? 'text-amber-400 font-medium' : '')}>
+            {diffDays === null ? 'Open / Ongoing' : diffDays > 0 ? `${diffDays}d left` : diffDays === 0 ? 'Today' : 'Deadline passed'}
           </span>
         </div>
 

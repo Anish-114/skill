@@ -13,6 +13,7 @@ from app.models import (
     Opportunity,
     SavedOpportunity,
 )
+from app.core.config import settings
 from app.db.init_db import init_db
 from app.db.seed_data import SAMPLE_OPPORTUNITIES, SAMPLE_SKILLS
 
@@ -26,6 +27,10 @@ def test_models_and_seed_data():
     Base.metadata.create_all(bind=test_engine)
     session = TestingSessionLocal()
     
+    # Enable sample opportunities seeding for this isolated in-memory test
+    prev_seed_flag = settings.SEED_SAMPLE_OPPORTUNITIES
+    settings.SEED_SAMPLE_OPPORTUNITIES = True
+
     try:
         # 2. Run seed logic directly on the in-memory database
         init_db(db=session)
@@ -34,17 +39,12 @@ def test_models_and_seed_data():
         opportunities = session.query(Opportunity).all()
         assert len(opportunities) >= len(SAMPLE_OPPORTUNITIES), "Opportunities count mismatch"
         
-        # Check specific opportunity properties
-        sih = session.query(Opportunity).filter(Opportunity.source == "Smart India Hackathon").first()
-        assert sih is not None, "Smart India Hackathon not found in seed"
-        assert sih.eligibility_criteria["requires_female_member"] is True
-        assert sih.eligibility_criteria["team_size"]["min"] == 6
-        assert "FastAPI" in sih.required_skills
-        assert "Python" in sih.required_skills
-
+        # Check specific opportunity properties from sample opportunities
         google_sc = session.query(Opportunity).filter(Opportunity.title.like("%Google Solution Challenge%")).first()
-        assert google_sc is not None
+        assert google_sc is not None, "Google Solution Challenge not found in seed"
         assert "Flutter" in google_sc.required_skills
+        assert "Python" in google_sc.required_skills
+        assert google_sc.is_active is True
 
         # 4. Verify Skills Taxonomy
         skills = session.query(Skill).all()
@@ -71,6 +71,7 @@ def test_models_and_seed_data():
 
         print("\nAll database schema, relationships, and seed validations passed successfully!")
     finally:
+        settings.SEED_SAMPLE_OPPORTUNITIES = prev_seed_flag
         session.close()
 
 
