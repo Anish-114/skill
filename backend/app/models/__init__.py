@@ -4,6 +4,7 @@ from .student_profile import StudentProfile
 from .skill import Skill, StudentSkill
 from .opportunity import Opportunity
 from .saved_opportunity import SavedOpportunity
+from .sync_log import EventSyncLog
 
 __all__ = [
     "Base",
@@ -13,4 +14,5 @@ __all__ = [
     "StudentSkill",
     "Opportunity",
     "SavedOpportunity",
+    "EventSyncLog",
 ]

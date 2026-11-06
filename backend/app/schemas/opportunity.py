@@ -11,10 +11,12 @@ class OpportunityBase(BaseModel):
     required_skills: List[str] = Field(default_factory=list)
     eligibility_criteria: Dict[str, Any] = Field(default_factory=dict)
     deadline: datetime
+    start_date: Optional[datetime] = None
     mode: str = Field("Online", description="Online | Hybrid | In-Person")
     location: Optional[str] = None
     official_url: str
-    source: str = Field("Unstop", description="Smart India Hackathon | Google | Unstop | MyGov")
+    source: str = Field("Unstop", description="Smart India Hackathon | Devfolio | Unstop | MLH")
+    external_id: Optional[str] = None
     prize_pool: Optional[str] = None
     is_active: bool = True
 
@@ -31,10 +33,12 @@ class OpportunityUpdate(BaseModel):
     required_skills: Optional[List[str]] = None
     eligibility_criteria: Optional[Dict[str, Any]] = None
     deadline: Optional[datetime] = None
+    start_date: Optional[datetime] = None
     mode: Optional[str] = None
     location: Optional[str] = None
     official_url: Optional[str] = None
     source: Optional[str] = None
+    external_id: Optional[str] = None
     prize_pool: Optional[str] = None
     is_active: Optional[bool] = None
 

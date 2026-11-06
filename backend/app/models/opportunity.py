@@ -44,10 +44,12 @@ class Opportunity(Base):
     eligibility_criteria: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
     
     deadline: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
+    start_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     mode: Mapped[str] = mapped_column(String(50), nullable=False, default="Online", index=True)  # Online, Hybrid, In-Person
     location: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     official_url: Mapped[str] = mapped_column(String(512), nullable=False)
-    source: Mapped[str] = mapped_column(String(100), nullable=False, index=True)  # Smart India Hackathon, Unstop, MyGov, Google
+    source: Mapped[str] = mapped_column(String(100), nullable=False, index=True)  # Smart India Hackathon, Unstop, Devfolio, MLH
+    external_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)
     prize_pool: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)

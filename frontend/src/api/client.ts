@@ -127,6 +127,11 @@ export const getOpportunities = async (params?: OpportunityQueryParams): Promise
   return response.data;
 };
 
+export const getActiveEvents = async (): Promise<Opportunity[]> => {
+  const response = await apiClient.get<Opportunity[]>('/events');
+  return response.data;
+};
+
 export const getOpportunityDetail = async (id: number): Promise<Opportunity> => {
   const response = await apiClient.get<Opportunity>(`/opportunities/${id}`);
   return response.data;

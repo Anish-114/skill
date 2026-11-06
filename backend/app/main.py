@@ -31,6 +31,32 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to initialize database on startup: {e}")
         raise e
+
+    # Schedule non-blocking background sync if last sync is > 6 hours old
+    async def schedule_startup_events_sync():
+        try:
+            from app.db.session import SessionLocal
+            from app.services.events_sync import EventSyncEngine
+            db = SessionLocal()
+            try:
+                if EventSyncEngine.is_sync_needed(db, max_age_hours=settings.EVENTS_SYNC_INTERVAL_HOURS):
+                    logger.info("Startup check: Events sync needed (>6h old or first run). Starting background sync...")
+                    engine = EventSyncEngine()
+                    res = await engine.run_sync(db)
+                    logger.info(
+                        f"Startup background sync completed: {res.get('new_events', 0)} new, "
+                        f"{res.get('updated_events', 0)} updated, {res.get('expired_events', 0)} expired."
+                    )
+                else:
+                    logger.info("Startup check: Events catalog is fresh (synced within last 6h).")
+            finally:
+                db.close()
+        except Exception as sync_exc:
+            logger.error(f"Background startup events sync error (non-fatal): {sync_exc}", exc_info=True)
+
+    import asyncio
+    asyncio.create_task(schedule_startup_events_sync())
+
     yield
     logger.info("Shutting down SkillBridge AI Backend application...")
 

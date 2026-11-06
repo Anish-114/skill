@@ -26,6 +26,23 @@ def init_db(db: Session = None) -> None:
     logger.info("Ensuring database tables exist...")
     Base.metadata.create_all(bind=engine)
 
+    # SQLite migration helper to ensure newly added columns exist
+    from sqlalchemy import text
+    try:
+        with engine.connect() as conn:
+            cols = [row[1] for row in conn.execute(text("PRAGMA table_info(opportunities)")).fetchall()]
+            if cols:
+                if "external_id" not in cols:
+                    logger.info("Migrating opportunities table: adding external_id column...")
+                    conn.execute(text("ALTER TABLE opportunities ADD COLUMN external_id VARCHAR(255)"))
+                    conn.commit()
+                if "start_date" not in cols:
+                    logger.info("Migrating opportunities table: adding start_date column...")
+                    conn.execute(text("ALTER TABLE opportunities ADD COLUMN start_date DATETIME"))
+                    conn.commit()
+    except Exception as mig_err:
+        logger.warning(f"Column migration check note: {mig_err}")
+
     close_session = False
     if db is None:
         db = SessionLocal()

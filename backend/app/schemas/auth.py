@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict
 from app.schemas.student_profile import StudentProfileResponse
 
 
 class UserRegisterRequest(BaseModel):
-    email: EmailStr
+    email: str = Field(..., description="User email address")
     password: str = Field(..., min_length=4, description="Password")
     full_name: str = Field(..., min_length=1, description="User full name")
     degree: Optional[str] = "B.Tech"
@@ -16,7 +16,7 @@ class UserRegisterRequest(BaseModel):
 
 
 class UserLoginRequest(BaseModel):
-    email: EmailStr
+    email: str = Field(..., description="User email address")
     password: str
 
 

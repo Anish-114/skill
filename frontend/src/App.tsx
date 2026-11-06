@@ -84,11 +84,19 @@ export const App: React.FC = () => {
       setLoadingRecs(false);
     }
 
-    // 4. Fetch All Opportunities
+    // 4. Fetch Active & Upcoming Opportunities
     try {
       setLoadingOpps(true);
-      const oppsData = await getOpportunities();
-      setOpportunities(oppsData);
+      const oppsData = await getOpportunities({
+        is_active: true,
+        min_deadline: new Date().toISOString(),
+        limit: 100,
+      });
+      // Sort upcoming events chronologically ascending (earliest upcoming deadline first)
+      const sorted = [...oppsData].sort(
+        (a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+      );
+      setOpportunities(sorted);
     } catch (err) {
       console.error('Failed to load opportunities:', err);
     } finally {

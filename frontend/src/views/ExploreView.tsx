@@ -26,23 +26,33 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   const categories = ['all', 'Hackathon', 'Coding Contest', 'Hiring Challenge'];
   const modes = ['all', 'Online', 'Hybrid', 'In-Person'];
 
-  const filtered = opportunities.filter((opp) => {
-    const matchesSearch =
-      searchTerm === '' ||
-      opp.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      opp.organizer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      opp.required_skills.some((s) => s.toLowerCase().includes(searchTerm.toLowerCase()));
+  const nowTimestamp = Date.now() - 24 * 3600 * 1000;
 
-    const matchesCat =
-      selectedCategory === 'all' ||
-      opp.category.toLowerCase().includes(selectedCategory.toLowerCase());
+  const filtered = opportunities
+    .filter((opp) => {
+      // Show only active and upcoming events
+      const isUpcoming =
+        opp.is_active !== false &&
+        (!opp.deadline || new Date(opp.deadline).getTime() >= nowTimestamp);
+      if (!isUpcoming) return false;
 
-    const matchesMode =
-      selectedMode === 'all' ||
-      opp.mode.toLowerCase() === selectedMode.toLowerCase();
+      const matchesSearch =
+        searchTerm === '' ||
+        opp.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        opp.organizer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        opp.required_skills.some((s) => s.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    return matchesSearch && matchesCat && matchesMode;
-  });
+      const matchesCat =
+        selectedCategory === 'all' ||
+        opp.category.toLowerCase().includes(selectedCategory.toLowerCase());
+
+      const matchesMode =
+        selectedMode === 'all' ||
+        opp.mode.toLowerCase() === selectedMode.toLowerCase();
+
+      return matchesSearch && matchesCat && matchesMode;
+    })
+    .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
@@ -113,7 +123,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
       {/* Grid count summary */}
       <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-        <span>Showing {filtered.length} active opportunities</span>
+        <span>Showing {filtered.length} active & upcoming opportunities (sorted by deadline)</span>
       </div>
 
       {/* Opportunities Grid */}

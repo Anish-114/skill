@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     
+    # Events Synchronization Configuration
+    EVENTS_SYNC_TOKEN: str = "skillbridge-events-sync-secret-token"
+    EVENTS_SYNC_INTERVAL_HOURS: int = 6
+    EVENTS_SYNC_SOURCES: str = "devfolio,unstop,mlh,sih"
+
     # Environment
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
