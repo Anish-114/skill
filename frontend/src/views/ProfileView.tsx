@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   User,
   GraduationCap,
@@ -12,6 +12,10 @@ import {
   Link,
   Github,
   Linkedin,
+  Upload,
+  FileText,
+  AlertTriangle,
+  X,
 } from 'lucide-react';
 import { StudentProfile, StudentSkillItem } from '../types';
 import {
@@ -19,6 +23,7 @@ import {
   addOrUpdateSkill,
   deleteSkill,
   parseBio,
+  parseResumePdf,
 } from '../api/client';
 import { cn } from '../utils/cn';
 
@@ -58,6 +63,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   // NLP Extracted Skills State
   const [extractedSkills, setExtractedSkills] = useState<string[]>([]);
   const [parsingBio, setParsingBio] = useState(false);
+
+  // Resume PDF Upload State
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
+  const [extractedPdfText, setExtractedPdfText] = useState<string | null>(null);
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,6 +147,52 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       console.error('Failed to extract skills from bio:', err);
     } finally {
       setParsingBio(false);
+    }
+  };
+
+  const handleResumeFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setPdfError(null);
+    setExtractedPdfText(null);
+
+    // Validation 1: file type
+    if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+      setPdfError('Sirf PDF files supported hain. Kripya .pdf file upload karein.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    // Validation 2: max 5 MB
+    if (file.size > 5 * 1024 * 1024) {
+      setPdfError('File size 5 MB se zyada hai. Kripya 5 MB se chhoti PDF upload karein.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    setUploadingPdf(true);
+    try {
+      const result = await parseResumePdf(file);
+      const currentNames = new Set(profile.skills.map((s) => s.name.toLowerCase()));
+      const unadded = result.extracted_skills.filter(
+        (s) => !currentNames.has(s.toLowerCase())
+      );
+      setExtractedSkills(unadded);
+      if (result.extracted_text) {
+        setExtractedPdfText(result.extracted_text);
+      }
+    } catch (err: any) {
+      console.error('Failed to parse resume PDF:', err);
+      const serverDetail = err?.response?.data?.detail;
+      if (serverDetail) {
+        setPdfError(serverDetail);
+      } else {
+        setPdfError('Is PDF mein text nahi mila, bio paste karo');
+      }
+    } finally {
+      setUploadingPdf(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -257,46 +314,104 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
             {/* Raw Bio & NLP Skill Extraction */}
             <div className="pt-2">
-              <div className="flex items-center justify-between mb-1.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
                 <label className="block text-xs font-semibold text-slate-300">
                   Raw Bio / Resume Summary
                 </label>
-                <button
-                  type="button"
-                  onClick={handleExtractBioSkills}
-                  disabled={parsingBio || !formData.raw_bio.trim()}
-                  className="text-xs text-ai-primary hover:text-ai-glow font-semibold flex items-center gap-1 transition-colors disabled:opacity-50"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{parsingBio ? 'Extracting...' : 'Extract Skills from Bio'}</span>
-                </button>
+                <div className="flex items-center gap-3">
+                  {/* Hidden File Input for Resume PDF */}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept=".pdf,application/pdf"
+                    onChange={handleResumeFileChange}
+                    className="hidden"
+                  />
+
+                  {/* Resume PDF Upload Button (Requirement 3) */}
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingPdf}
+                    className="text-xs text-brand-400 hover:text-brand-300 font-semibold flex items-center gap-1 transition-colors disabled:opacity-50"
+                    title="Upload resume in PDF format (max 5 MB) to automatically detect skills"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{uploadingPdf ? 'Extracting from PDF...' : 'Upload Resume (PDF)'}</span>
+                  </button>
+
+                  {/* Extract from Bio Button */}
+                  <button
+                    type="button"
+                    onClick={handleExtractBioSkills}
+                    disabled={parsingBio || !formData.raw_bio.trim()}
+                    className="text-xs text-ai-primary hover:text-ai-glow font-semibold flex items-center gap-1 transition-colors disabled:opacity-50"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>{parsingBio ? 'Extracting...' : 'Extract from Bio'}</span>
+                  </button>
+                </div>
               </div>
+
+              {/* PDF Error Alert (Requirement 5) */}
+              {pdfError && (
+                <div className="mb-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-300 text-xs flex items-center justify-between gap-2 animate-in fade-in">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                    <span>{pdfError}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPdfError(null)}
+                    className="text-rose-400 hover:text-white p-0.5"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
 
               <textarea
                 rows={4}
                 value={formData.raw_bio}
                 onChange={(e) => setFormData({ ...formData, raw_bio: e.target.value })}
-                placeholder="Paste your resume summary or technical bio here (e.g. 'I am a 3rd year student passionate about building scalable microservices with FastAPI and React, fine-tuning PyTorch models...')"
+                placeholder="Paste your resume summary or technical bio here, or upload your resume PDF above (e.g. 'I am a 3rd year student passionate about building scalable microservices with FastAPI and React, fine-tuning PyTorch models...')"
                 className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 leading-relaxed"
               />
             </div>
 
             {/* Extracted Skills Callout Box */}
             {extractedSkills.length > 0 && (
-              <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/25 animate-in fade-in duration-200">
-                <div className="flex items-center justify-between mb-2">
+              <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/25 animate-in fade-in duration-200 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4 text-ai-primary" />
-                    Detected {extractedSkills.length} New Skills from Your Bio
+                    Detected {extractedSkills.length} New Skills from Your Resume / Bio
                   </span>
-                  <button
-                    type="button"
-                    onClick={handleAddAllExtracted}
-                    className="text-xs font-bold px-2.5 py-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white transition-colors"
-                  >
-                    Add All Detected
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {extractedPdfText && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData({ ...formData, raw_bio: extractedPdfText });
+                          setExtractedPdfText(null);
+                        }}
+                        className="text-xs text-indigo-300 hover:text-white font-semibold flex items-center gap-1 transition-colors px-2.5 py-1 rounded-lg bg-indigo-900/40 hover:bg-indigo-900/70 border border-indigo-500/30"
+                        title="Copy extracted resume text into your bio textarea (does not auto-save to DB)"
+                      >
+                        <FileText className="w-3 h-3 text-indigo-300" />
+                        <span>Insert Text into Bio</span>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleAddAllExtracted}
+                      className="text-xs font-bold px-2.5 py-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white transition-colors"
+                    >
+                      Add All Detected
+                    </button>
+                  </div>
                 </div>
+
                 <div className="flex flex-wrap gap-1.5">
                   {extractedSkills.map((sk, i) => (
                     <button
@@ -304,6 +419,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       type="button"
                       onClick={() => handleAddSkill(sk)}
                       className="text-xs px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-indigo-200 border border-indigo-500/30 flex items-center gap-1 transition-colors"
+                      title="Click to add this skill to your profile"
                     >
                       <Plus className="w-3 h-3 text-indigo-400" />
                       <span>{sk}</span>

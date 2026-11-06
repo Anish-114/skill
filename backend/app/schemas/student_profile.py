@@ -66,3 +66,4 @@ class SkillParseResponse(BaseModel):
     extracted_skills: List[str]
     matched_taxonomy_skills: List[dict]
     unmatched_tokens: List[str] = []
+    extracted_text: Optional[str] = None

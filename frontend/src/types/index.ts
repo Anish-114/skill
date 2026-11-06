@@ -126,6 +126,7 @@ export interface SkillParseResponse {
   extracted_skills: string[];
   matched_taxonomy_skills: Array<{ id: number; name: string; category?: string }>;
   unmatched_tokens: string[];
+  extracted_text?: string;
 }
 
 export interface UserAccount {

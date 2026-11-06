@@ -111,6 +111,17 @@ export const parseBio = async (raw_bio?: string): Promise<SkillParseResponse> =>
   return response.data;
 };
 
+export const parseResumePdf = async (file: File): Promise<SkillParseResponse> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await apiClient.post<SkillParseResponse>('/profiles/me/parse-resume', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
 // Opportunities APIs
 export interface OpportunityQueryParams {
   category?: string;
