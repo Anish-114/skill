@@ -365,6 +365,15 @@ export const App: React.FC = () => {
               'applied'
             : false
         }
+        onFindTeammates={(oppId) => {
+          const targetOpp =
+            opportunities.find((o) => o.id === oppId) ||
+            recommendations.find((r) => r.opportunity.id === oppId)?.opportunity ||
+            savedList.find((s) => s.opportunity_id === oppId)?.opportunity;
+          if (targetOpp) {
+            handleFindTeammates(targetOpp);
+          }
+        }}
       />
 
       {/* Authentication / Switch User Modal */}

@@ -16,6 +16,7 @@ import {
   Clock,
   Video,
   FileText,
+  Users,
 } from 'lucide-react';
 import { FullEvaluation } from '../types';
 import { cn } from '../utils/cn';
@@ -27,6 +28,7 @@ interface EvaluationModalProps {
   officialUrl?: string;
   onMarkApplied?: (oppId: number) => void;
   isApplied?: boolean;
+  onFindTeammates?: (oppId: number) => void;
 }
 
 export const EvaluationModal: React.FC<EvaluationModalProps> = ({
@@ -36,6 +38,7 @@ export const EvaluationModal: React.FC<EvaluationModalProps> = ({
   officialUrl,
   onMarkApplied,
   isApplied,
+  onFindTeammates,
 }) => {
   const { t } = useTranslation();
   if (!isOpen || !evaluation) return null;
@@ -375,6 +378,20 @@ export const EvaluationModal: React.FC<EvaluationModalProps> = ({
           </button>
 
           <div className="flex items-center gap-2">
+            {onFindTeammates && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onFindTeammates(evaluation.opportunity_id);
+                }}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600/90 hover:bg-indigo-500 text-white transition-all border border-indigo-500/30 shadow-sm active:scale-95"
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>{t('team_posts.tab_board')}</span>
+              </button>
+            )}
+
             {onMarkApplied && (
               <button
                 type="button"

@@ -13,6 +13,7 @@ from app.models import (
     Opportunity,
     SavedOpportunity,
     TeamRequest,
+    TeamPost,
 )
 from app.db.seed_data import SAMPLE_SKILLS, SAMPLE_OPPORTUNITIES, SAMPLE_USERS
 
@@ -82,6 +83,13 @@ def init_db(db: Session = None) -> None:
                 if "looking_for_team" not in sp_cols:
                     logger.info("Migrating student_profiles table: adding looking_for_team column...")
                     conn.execute(text("ALTER TABLE student_profiles ADD COLUMN looking_for_team BOOLEAN NOT NULL DEFAULT 0"))
+                    conn.commit()
+
+            tr_cols = [row[1] for row in conn.execute(text("PRAGMA table_info(team_requests)")).fetchall()]
+            if tr_cols:
+                if "team_post_id" not in tr_cols:
+                    logger.info("Migrating team_requests table: adding team_post_id column...")
+                    conn.execute(text("ALTER TABLE team_requests ADD COLUMN team_post_id INTEGER REFERENCES team_posts(id)"))
                     conn.commit()
     except Exception as mig_err:
         logger.warning(f"Column migration check note: {mig_err}")

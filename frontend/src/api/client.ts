@@ -14,6 +14,9 @@ import {
   UserAccount,
   TeammateCandidate,
   TeamRequestItem,
+  TeamPost,
+  TeamPostCreatePayload,
+  TeamPostUpdatePayload,
 } from '../types';
 
 const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '/api/v1';
@@ -251,5 +254,50 @@ export const updateTeamRequestStatus = async (
   status: 'accepted' | 'declined'
 ): Promise<TeamRequestItem> => {
   const response = await apiClient.patch<TeamRequestItem>(`/team-requests/${requestId}`, { status });
+  return response.data;
+};
+
+// ==========================================
+// Team Posts API Endpoints
+// ==========================================
+
+export const getOpportunityTeamPosts = async (oppId: number): Promise<TeamPost[]> => {
+  const response = await apiClient.get<TeamPost[]>(`/opportunities/${oppId}/team-posts`);
+  return response.data;
+};
+
+export const createOpportunityTeamPost = async (
+  oppId: number,
+  payload: TeamPostCreatePayload
+): Promise<TeamPost> => {
+  const response = await apiClient.post<TeamPost>(`/opportunities/${oppId}/team-posts`, payload);
+  return response.data;
+};
+
+export const getMyTeamPosts = async (): Promise<TeamPost[]> => {
+  const response = await apiClient.get<TeamPost[]>('/team-posts/me');
+  return response.data;
+};
+
+export const editTeamPost = async (
+  postId: number,
+  payload: TeamPostUpdatePayload
+): Promise<TeamPost> => {
+  const response = await apiClient.patch<TeamPost>(`/team-posts/${postId}`, payload);
+  return response.data;
+};
+
+export const closeTeamPost = async (postId: number): Promise<TeamPost> => {
+  const response = await apiClient.post<TeamPost>(`/team-posts/${postId}/close`);
+  return response.data;
+};
+
+export const joinTeamPost = async (
+  postId: number,
+  message?: string
+): Promise<TeamRequestItem> => {
+  const response = await apiClient.post<TeamRequestItem>(`/team-posts/${postId}/join`, {
+    message: message || undefined,
+  });
   return response.data;
 };

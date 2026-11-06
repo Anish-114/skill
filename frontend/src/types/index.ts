@@ -230,6 +230,7 @@ export interface TeamRequestItem {
   from_user_id: number;
   to_user_id: number;
   opportunity_id: number;
+  team_post_id?: number | null;
   opportunity_title: string;
   status: 'pending' | 'accepted' | 'declined';
   message?: string;
@@ -238,4 +239,40 @@ export interface TeamRequestItem {
   from_user: TeamUserSummary;
   to_user: TeamUserSummary;
   is_sender: boolean;
+}
+
+export interface TeamPost {
+  id: number;
+  user_id: number;
+  opportunity_id: number;
+  opportunity_title: string;
+  message: string;
+  needed_skills: string[];
+  team_size_needed: number;
+  status: 'open' | 'closed';
+  created_at: string;
+  updated_at: string;
+  creator: TeamUserSummary;
+  matched_skills: string[];
+  match_count: number;
+  match_percentage: number;
+  is_creator: boolean;
+  has_requested: boolean;
+  my_request_status?: 'pending' | 'accepted' | 'declined' | null;
+  my_request_id?: number | null;
+  requests_count: number;
+  requests?: TeamRequestItem[] | null;
+}
+
+export interface TeamPostCreatePayload {
+  message: string;
+  needed_skills: string[];
+  team_size_needed: number;
+}
+
+export interface TeamPostUpdatePayload {
+  message?: string;
+  needed_skills?: string[];
+  team_size_needed?: number;
+  status?: 'open' | 'closed';
 }

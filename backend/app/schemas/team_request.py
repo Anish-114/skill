@@ -50,6 +50,7 @@ class TeamUserSummary(BaseModel):
 class TeamRequestCreate(BaseModel):
     to_user_id: int
     opportunity_id: int
+    team_post_id: Optional[int] = None
     message: Optional[str] = Field(None, max_length=1000)
 
 
@@ -62,6 +63,7 @@ class TeamRequestResponse(BaseModel):
     from_user_id: int
     to_user_id: int
     opportunity_id: int
+    team_post_id: Optional[int] = None
     opportunity_title: str
     status: str
     message: Optional[str] = None

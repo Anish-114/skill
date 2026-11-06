@@ -61,6 +61,7 @@ def _format_team_request_response(req: TeamRequest, current_user_id: int) -> Tea
         from_user_id=req.from_user_id,
         to_user_id=req.to_user_id,
         opportunity_id=req.opportunity_id,
+        team_post_id=req.team_post_id,
         opportunity_title=opp_title,
         status=req.status,
         message=req.message,
@@ -166,6 +167,7 @@ def send_team_request(
         from_user_id=current_user.id,
         to_user_id=payload.to_user_id,
         opportunity_id=payload.opportunity_id,
+        team_post_id=payload.team_post_id,
         status="pending",
         message=payload.message.strip() if payload.message else None,
     )

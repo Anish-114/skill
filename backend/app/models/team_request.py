@@ -8,6 +8,7 @@ from .base import Base
 if TYPE_CHECKING:
     from .user import User
     from .opportunity import Opportunity
+    from .team_post import TeamPost
 
 
 class TeamRequest(Base):
@@ -36,6 +37,12 @@ class TeamRequest(Base):
         nullable=False, 
         index=True
     )
+    team_post_id: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        ForeignKey("team_posts.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True
+    )
     status: Mapped[str] = mapped_column(
         String(32), 
         default="pending", 
@@ -60,6 +67,7 @@ class TeamRequest(Base):
     from_user: Mapped["User"] = relationship("User", foreign_keys=[from_user_id])
     to_user: Mapped["User"] = relationship("User", foreign_keys=[to_user_id])
     opportunity: Mapped["Opportunity"] = relationship("Opportunity")
+    team_post: Mapped[Optional["TeamPost"]] = relationship("TeamPost", back_populates="team_requests")
 
     __table_args__ = (
         UniqueConstraint("from_user_id", "to_user_id", "opportunity_id", name="uq_team_request_from_to_opp"),

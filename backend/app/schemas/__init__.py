@@ -34,6 +34,12 @@ from .auth import (
     UserResponse,
     TokenResponse,
 )
+from .team_post import (
+    TeamPostCreate,
+    TeamPostUpdate,
+    TeamPostJoinRequest,
+    TeamPostResponse,
+)
 
 __all__ = [
     "StudentSkillItem",
