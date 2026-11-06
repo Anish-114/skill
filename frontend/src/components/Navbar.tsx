@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Sparkles,
   Compass,
@@ -11,6 +12,7 @@ import {
   LogOut,
   UserCheck,
   Users,
+  Globe,
 } from 'lucide-react';
 import { cn } from '../utils/cn';
 
@@ -41,11 +43,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   pendingTeamRequestsCount = 0,
   onOpenTeamRequests,
 }) => {
+  const { t, i18n } = useTranslation();
+
   const tabs = [
-    { id: 'dashboard' as TabType, label: 'AI Recommendations', icon: Sparkles },
-    { id: 'explore' as TabType, label: 'Explore Events', icon: Compass },
-    { id: 'saved' as TabType, label: 'Saved', icon: Bookmark, badge: savedCount > 0 ? savedCount : null },
-    { id: 'profile' as TabType, label: 'My Profile', icon: User },
+    { id: 'dashboard' as TabType, label: t('navbar.tab_dashboard'), icon: Sparkles },
+    { id: 'explore' as TabType, label: t('navbar.tab_explore'), icon: Compass },
+    { id: 'saved' as TabType, label: t('navbar.tab_saved'), icon: Bookmark, badge: savedCount > 0 ? savedCount : null },
+    { id: 'profile' as TabType, label: t('navbar.tab_profile'), icon: User },
   ];
 
   return (
@@ -104,15 +108,43 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Status & Auth Actions */}
         <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Language Toggle */}
+          <div className="flex items-center rounded-xl bg-slate-900 border border-slate-800 p-0.5 text-xs">
+            <button
+              onClick={() => i18n.changeLanguage('en')}
+              className={cn(
+                'px-2 py-1 rounded-lg font-bold transition-all text-[11px]',
+                i18n.language === 'en'
+                  ? 'bg-brand-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              )}
+              title="Switch to English"
+            >
+              EN
+            </button>
+            <button
+              onClick={() => i18n.changeLanguage('hi-Latn')}
+              className={cn(
+                'px-2 py-1 rounded-lg font-bold transition-all text-[11px]',
+                i18n.language === 'hi-Latn'
+                  ? 'bg-brand-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              )}
+              title="Hinglish mein dekhein"
+            >
+              Hinglish
+            </button>
+          </div>
+
           {/* Team Requests Button */}
           {onOpenTeamRequests && (
             <button
               onClick={onOpenTeamRequests}
               className="relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-800 transition-colors"
-              title="Meri Team Requests & Collaboration Invites"
+              title={t('navbar.team_requests')}
             >
               <Users className="w-3.5 h-3.5 text-brand-400" />
-              <span className="hidden sm:inline">Team Requests</span>
+              <span className="hidden sm:inline">{t('navbar.team_requests')}</span>
               {pendingTeamRequestsCount > 0 && (
                 <span className="px-1.5 py-0.2 text-[10px] font-bold rounded-full bg-brand-500 text-white animate-pulse">
                   {pendingTeamRequestsCount}
@@ -141,7 +173,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Activity className="w-3.5 h-3.5 animate-spin text-amber-400" />
             )}
             <span className="hidden sm:inline">
-              {serverHealthy ? 'AI Online' : serverHealthy === false ? 'Offline' : 'Connecting'}
+              {serverHealthy
+                ? t('navbar.server_online')
+                : serverHealthy === false
+                ? t('navbar.server_offline')
+                : t('navbar.server_connecting')}
             </span>
           </div>
 
@@ -160,7 +196,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {studentName || 'Student Profile'}
                 </span>
                 <span className="text-[10px] text-slate-400">
-                  {isAuthenticated ? 'Active User' : 'Demo Account'}
+                  {isAuthenticated ? t('navbar.active_user') : t('navbar.demo_account')}
                 </span>
               </div>
             </button>
@@ -180,7 +216,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-brand-600/90 hover:bg-brand-500 text-white shadow-sm transition-all"
               >
                 <LogIn className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Sign In / Register</span>
+                <span className="hidden sm:inline">{t('navbar.sign_in_register')}</span>
               </button>
             )}
 
@@ -191,7 +227,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title="Switch User Account"
               >
                 <UserCheck className="w-3 h-3 text-brand-400" />
-                <span>Switch</span>
+                <span>{t('navbar.switch_user')}</span>
               </button>
             )}
           </div>

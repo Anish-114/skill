@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   X,
   MessageSquare,
@@ -34,6 +35,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
   onClose,
   onRequestsUpdated,
 }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'received' | 'sent'>('received');
   const [requests, setRequests] = useState<TeamRequestItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -97,7 +99,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
             </span>
             <div>
               <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <span>Meri Team Requests</span>
+                <span>{t('team_requests.title')}</span>
                 {pendingIncomingCount > 0 && (
                   <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-brand-500 text-white animate-pulse">
                     {pendingIncomingCount} New
@@ -105,7 +107,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
                 )}
               </h2>
               <p className="text-xs text-slate-400">
-                Hackathon collaboration invites aur incoming team matching requests
+                {t('team_requests.subtitle')}
               </p>
             </div>
           </div>
@@ -130,7 +132,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
             )}
           >
             <Inbox className="w-4 h-4" />
-            <span>Aaye Huye Requests (Incoming)</span>
+            <span>{t('team_requests.tab_incoming')}</span>
             {pendingIncomingCount > 0 && (
               <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-brand-500 text-white">
                 {pendingIncomingCount}
@@ -148,7 +150,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
             )}
           >
             <Send className="w-4 h-4" />
-            <span>Bheje Huye Requests (Sent)</span>
+            <span>{t('team_requests.tab_sent')}</span>
             <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300">
               {outgoingRequests.length}
             </span>
@@ -160,7 +162,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
           {loading && (
             <div className="py-16 text-center space-y-3">
               <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-xs text-slate-400">Loading your team collaboration requests...</p>
+              <p className="text-xs text-slate-400">{t('common.loading')}</p>
             </div>
           )}
 
@@ -172,7 +174,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
                 onClick={loadRequests}
                 className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white"
               >
-                Retry
+                {t('common.retry')}
               </button>
             </div>
           )}
@@ -182,13 +184,13 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
               <MessageSquare className="w-10 h-10 text-slate-600 mx-auto" />
               <h3 className="text-sm font-bold text-slate-300">
                 {activeTab === 'received'
-                  ? 'Abhi koi incoming team requests nahi hain'
-                  : 'Aapne abhi tak koi team request nahi bheji'}
+                  ? t('team_requests.empty_incoming_title')
+                  : t('team_requests.empty_sent_title')}
               </h3>
               <p className="text-xs text-slate-400 max-w-md mx-auto">
                 {activeTab === 'received'
-                  ? 'Jab doosre students aapki profile dekh kar collaborate karna chahenge, unki requests yahan dikhengi.'
-                  : 'Hackathons explore karein aur "Teammates dhundho" button se compatible teammates ko invite karein.'}
+                  ? t('team_requests.empty_incoming_subtitle')
+                  : t('team_requests.empty_sent_subtitle')}
               </p>
             </div>
           )}
@@ -232,19 +234,19 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
                         {isAccepted && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold text-xs">
                             <CheckCircle2 className="w-3.5 h-3.5" />
-                            <span>Accepted</span>
+                            <span>{t('team_requests.status_accepted')}</span>
                           </span>
                         )}
                         {isPending && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold text-xs">
                             <Clock className="w-3.5 h-3.5" />
-                            <span>Pending</span>
+                            <span>{t('team_requests.status_pending')}</span>
                           </span>
                         )}
                         {isDeclined && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 font-semibold text-xs">
                             <XCircle className="w-3.5 h-3.5" />
-                            <span>Declined</span>
+                            <span>{t('team_requests.status_declined')}</span>
                           </span>
                         )}
                       </div>
@@ -252,7 +254,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
 
                     {/* Opportunity reference */}
                     <div className="flex items-center gap-2 text-xs text-slate-300 bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-800">
-                      <span className="text-slate-400">Event:</span>
+                      <span className="text-slate-400">{t('team_requests.event_label')}</span>
                       <span className="font-semibold text-brand-300 truncate">
                         {req.opportunity_title}
                       </span>
@@ -284,7 +286,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
                       <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 space-y-2">
                         <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
                           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                          <span>Connected! Contact Details:</span>
+                          <span>{t('team_requests.connected_title')}</span>
                         </div>
                         <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
                           {partner.email && (
@@ -334,7 +336,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
                     ) : (
                       <div className="text-[11px] text-slate-500 flex items-center gap-1">
                         <ShieldCheck className="w-3.5 h-3.5 text-slate-600" />
-                        <span>Contact info protected until request is accepted</span>
+                        <span>{t('teammates.privacy_hidden')}</span>
                       </div>
                     )}
 
@@ -346,7 +348,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
                           disabled={isUpdating}
                           className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-400 border border-slate-700 transition-colors"
                         >
-                          Decline
+                          {t('team_requests.decline_request')}
                         </button>
                         <button
                           onClick={() => handleRespond(req.id, 'accepted')}
@@ -354,7 +356,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
                           className="px-4 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-md shadow-emerald-500/20 active:scale-95 flex items-center gap-1"
                         >
                           <Check className="w-3.5 h-3.5" />
-                          <span>Accept Request</span>
+                          <span>{t('team_requests.accept_request')}</span>
                         </button>
                       </div>
                     )}
@@ -372,7 +374,7 @@ export const TeamRequestsModal: React.FC<TeamRequestsModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
           >
-            Band Karein
+            {t('team_requests.close_modal')}
           </button>
         </div>
       </div>

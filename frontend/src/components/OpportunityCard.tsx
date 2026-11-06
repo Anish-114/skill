@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Calendar,
   Globe,
@@ -38,6 +39,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
   onMarkApplied,
   onFindTeammates,
 }) => {
+  const { t } = useTranslation();
   // Format deadline date in IST and calculate countdown
   const { label: countdownLabel, isUrgent } = getDeadlineCountdown(opportunity.deadline);
   const formattedIST = formatToIST(opportunity.deadline);
@@ -225,7 +227,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
             })}
             {(opportunity.required_skills || []).length > 4 && (
               <span className="text-[11px] px-1.5 py-0.5 rounded-md text-slate-400 bg-slate-900 border border-slate-800">
-                +{(opportunity.required_skills || []).length - 4} more
+                {t('card.more_skills', { count: (opportunity.required_skills || []).length - 4 })}
               </span>
             )}
           </div>
@@ -247,7 +249,11 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
           <div className="flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
             <span className={cn('font-medium', isUrgent ? 'text-amber-400' : 'text-slate-300')}>
-              {countdownLabel}
+              {countdownLabel === 'Deadline passed'
+                ? t('card.deadline_passed')
+                : countdownLabel === 'Open / Ongoing'
+                ? t('card.deadline_ongoing')
+                : countdownLabel}
             </span>
           </div>
           {opportunity.deadline && (
@@ -262,20 +268,20 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
           {opportunity.category?.toLowerCase().includes('hackathon') && onFindTeammates && (
             <button
               onClick={() => onFindTeammates(opportunity)}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600/90 hover:bg-indigo-500 text-white transition-all shadow-md shadow-indigo-500/20 active:scale-95 border border-indigo-500/30"
-              title="Find complementary teammates for this hackathon"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600/90 hover:bg-indigo-500 text-white transition-all shadow-md shadow-indigo-500/20 active:scale-95 border border-indigo-500/30 whitespace-nowrap"
+              title={t('card.teammates')}
             >
               <Users className="w-3 h-3 text-indigo-200" />
-              <span>Teammates</span>
+              <span>{t('card.teammates')}</span>
             </button>
           )}
 
           <button
             onClick={() => onEvaluate(opportunity.id)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white transition-all shadow-md shadow-brand-500/20 active:scale-95"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white transition-all shadow-md shadow-brand-500/20 active:scale-95 whitespace-nowrap"
           >
             <Zap className="w-3 h-3" />
-            <span>Evaluate</span>
+            <span>{t('card.evaluate')}</span>
           </button>
 
           <a
@@ -283,7 +289,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700"
-            title="Open official site"
+            title={t('card.open_site')}
           >
             <ExternalLink className="w-3.5 h-3.5" />
           </a>

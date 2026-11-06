@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Bookmark,
   ExternalLink,
@@ -84,6 +85,7 @@ export const SavedView: React.FC<SavedViewProps> = ({
   onRemoveSave,
   onItemUpdated,
 }) => {
+  const { t } = useTranslation();
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
   // Inline notes editor state: mapping oppId -> text being edited
@@ -187,10 +189,10 @@ export const SavedView: React.FC<SavedViewProps> = ({
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
             <Bookmark className="w-6 h-6 text-brand-400 fill-brand-400" />
-            Application Tracker & Saved Opportunities
+            {t('saved.title')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Track submissions, manage preparation notes, and monitor application milestones.
+            {t('saved.subtitle')}
           </p>
         </div>
 
@@ -199,7 +201,24 @@ export const SavedView: React.FC<SavedViewProps> = ({
           {ALL_STATUSES.map((s) => {
             const count = statusCounts[s] || 0;
             const cfg = STATUS_CONFIG[s];
-            const label = s === 'all' ? 'All' : cfg?.label || s;
+            const label =
+              s === 'all'
+                ? t('common.all')
+                : s === 'saved'
+                ? t('saved.filter_saved')
+                : s === 'applied'
+                ? t('saved.filter_applied')
+                : s === 'in_progress'
+                ? t('saved.filter_in_progress')
+                : s === 'shortlisted'
+                ? t('saved.filter_shortlisted')
+                : s === 'selected'
+                ? t('saved.filter_selected')
+                : s === 'rejected'
+                ? t('saved.filter_rejected')
+                : s === 'archived'
+                ? t('saved.filter_archived')
+                : cfg?.label || s;
 
             return (
               <button
@@ -278,7 +297,7 @@ export const SavedView: React.FC<SavedViewProps> = ({
                           title="Event deadline has passed. Historical record preserved."
                         >
                           <AlertCircle className="w-3 h-3 text-rose-400" />
-                          Expired
+                          {t('saved.expired_label')}
                         </span>
                       )}
                     </div>
@@ -294,28 +313,28 @@ export const SavedView: React.FC<SavedViewProps> = ({
                           currentStatusCfg.badgeClass,
                           isStatusUpdating && 'opacity-50 pointer-events-none'
                         )}
-                        title="Update application status"
+                        title={t('saved.status_label')}
                       >
                         <option value="saved" className="bg-slate-900 text-slate-200">
-                          Saved
+                          {t('saved.filter_saved')}
                         </option>
                         <option value="applied" className="bg-slate-900 text-indigo-300">
-                          Applied
+                          {t('saved.filter_applied')}
                         </option>
                         <option value="in_progress" className="bg-slate-900 text-amber-300">
-                          In Progress
+                          {t('saved.filter_in_progress')}
                         </option>
                         <option value="shortlisted" className="bg-slate-900 text-cyan-300">
-                          Shortlisted
+                          {t('saved.filter_shortlisted')}
                         </option>
                         <option value="selected" className="bg-slate-900 text-emerald-300">
-                          Selected
+                          {t('saved.filter_selected')}
                         </option>
                         <option value="rejected" className="bg-slate-900 text-rose-300">
-                          Rejected
+                          {t('saved.filter_rejected')}
                         </option>
                         <option value="archived" className="bg-slate-900 text-slate-400">
-                          Archived
+                          {t('saved.filter_archived')}
                         </option>
                       </select>
                     </div>
@@ -340,7 +359,7 @@ export const SavedView: React.FC<SavedViewProps> = ({
                           rows={2}
                           value={notesInput}
                           onChange={(e) => setNotesInput(e.target.value)}
-                          placeholder="Add tracking notes (e.g. Round 1 submitted, interview link, team ideas)..."
+                          placeholder={t('saved.notes_placeholder')}
                           className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 resize-none leading-relaxed"
                           autoFocus
                         />
@@ -351,7 +370,7 @@ export const SavedView: React.FC<SavedViewProps> = ({
                             disabled={isSavingNote}
                             className="px-2 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
                           >
-                            Cancel
+                            {t('common.cancel')}
                           </button>
                           <button
                             type="button"
@@ -360,7 +379,7 @@ export const SavedView: React.FC<SavedViewProps> = ({
                             className="px-2.5 py-1 rounded-md text-[11px] font-bold text-white bg-brand-600 hover:bg-brand-500 flex items-center gap-1 transition-colors"
                           >
                             <Check className="w-3 h-3" />
-                            <span>{isSavingNote ? 'Saving...' : 'Save Note'}</span>
+                            <span>{isSavingNote ? t('common.saving') : t('saved.notes_save')}</span>
                           </button>
                         </div>
                       </div>
@@ -382,7 +401,7 @@ export const SavedView: React.FC<SavedViewProps> = ({
                         className="text-[11px] text-slate-400 hover:text-brand-300 font-medium flex items-center gap-1 transition-colors py-1 px-2 rounded-lg hover:bg-slate-900/60 border border-dashed border-slate-800 hover:border-slate-700 w-full justify-center"
                       >
                         <Plus className="w-3 h-3" />
-                        <span>Add Tracking Notes</span>
+                        <span>{t('saved.notes_placeholder')}</span>
                       </button>
                     )}
                   </div>
@@ -415,7 +434,7 @@ export const SavedView: React.FC<SavedViewProps> = ({
                             : 'text-slate-300'
                         )}
                       >
-                        {isExpired ? 'Deadline passed' : countdownLabel}
+                        {isExpired ? t('saved.expired_label') : countdownLabel}
                       </span>
                     </div>
                     {opp.deadline && (
@@ -434,13 +453,13 @@ export const SavedView: React.FC<SavedViewProps> = ({
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white transition-all shadow-sm active:scale-95"
                     >
                       <Zap className="w-3 h-3" />
-                      <span>Report</span>
+                      <span>{t('card.evaluate')}</span>
                     </button>
 
                     <button
                       onClick={() => onRemoveSave(opp.id)}
                       className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition-colors border border-slate-700"
-                      title="Remove bookmark"
+                      title={t('saved.remove_button')}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -450,7 +469,7 @@ export const SavedView: React.FC<SavedViewProps> = ({
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors border border-slate-700"
-                      title="Open official site"
+                      title={t('card.open_site')}
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
@@ -464,14 +483,10 @@ export const SavedView: React.FC<SavedViewProps> = ({
         <div className="p-12 text-center rounded-3xl glass-panel bg-slate-900/30">
           <Bookmark className="w-12 h-12 text-slate-600 mx-auto mb-3" />
           <h3 className="text-lg font-bold text-white mb-1">
-            {selectedStatus === 'all'
-              ? 'No Bookmarked Opportunities'
-              : `No Opportunities with status "${selectedStatus}"`}
+            {t('saved.empty_title')}
           </h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            {selectedStatus === 'all'
-              ? 'Browse the AI Recommendations or Explore catalog to bookmark events you want to prepare for.'
-              : `Change the filter tab above or update the status on your saved opportunities.`}
+            {t('saved.empty_subtitle')}
           </p>
         </div>
       )}

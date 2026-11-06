@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   X,
   Users,
@@ -43,6 +44,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
   onProfileUpdated,
   onOpenRequests,
 }) => {
+  const { t } = useTranslation();
   const [candidates, setCandidates] = useState<TeammateCandidate[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -162,9 +164,9 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
               </span>
               <div>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span>Teammates Dhundho</span>
+                  <span>{t('teammates.title')}</span>
                   <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-300 border border-brand-500/25">
-                    Complementary Matching
+                    {t('teammates.badge')}
                   </span>
                 </h2>
                 <p className="text-xs text-slate-400 truncate max-w-xl">
@@ -185,7 +187,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                 title="View your pending and accepted team requests"
               >
                 <MessageSquare className="w-3.5 h-3.5 text-brand-400" />
-                <span>Meri Team Requests</span>
+                <span>{t('team_requests.title')}</span>
               </button>
             )}
             <button
@@ -221,10 +223,10 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2 text-amber-300 font-bold text-xs">
                   <Shield className="w-4 h-4 text-amber-400" />
-                  <span>Aapka 'Looking for Team' toggle abhi off hai</span>
+                  <span>{t('teammates.opt_in_banner_title')}</span>
                 </div>
                 <p className="text-[11px] text-slate-400">
-                  Toggle on karein taaki doosre students bhi aapki skills dekh kar aapko team request bhej sakein.
+                  {t('teammates.opt_in_banner_desc')}
                 </p>
               </div>
               <button
@@ -232,7 +234,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                 disabled={togglingOptIn}
                 className="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all shadow-sm flex-shrink-0"
               >
-                {togglingOptIn ? 'Updating...' : 'Enable in 1-Click'}
+                {togglingOptIn ? t('common.loading') : t('teammates.enable_1click')}
               </button>
             </div>
           )}
@@ -242,7 +244,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
             <div className="py-16 text-center space-y-3">
               <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto" />
               <p className="text-xs text-slate-400">
-                Aapki missing skills ke mutabik best complementary teammates match kiye ja rahe hain...
+                {t('teammates.loading')}
               </p>
             </div>
           )}
@@ -256,7 +258,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                 onClick={loadTeammates}
                 className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white"
               >
-                Dobara Koshish Karein
+                {t('common.retry')}
               </button>
             </div>
           )}
@@ -266,10 +268,10 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
             <div className="py-14 text-center space-y-3 glass-card rounded-2xl p-6 border border-slate-800">
               <Users className="w-10 h-10 text-slate-600 mx-auto" />
               <h3 className="text-sm font-bold text-slate-300">
-                Abhi is hackathon ke liye koi opt-in teammates nahi mile
+                {t('teammates.empty_title')}
               </h3>
               <p className="text-xs text-slate-400 max-w-md mx-auto">
-                Jaise hi doosre students apne profile mein "Looking for Team" opt-in karenge, wo yahan aapki missing skills ke hisaab se rank hokar dikhenge.
+                {t('teammates.empty_subtitle')}
               </p>
             </div>
           )}
@@ -278,10 +280,10 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
           {!loading && !error && candidates.length > 0 && (
             <div className="space-y-3.5">
               <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-                <span>{candidates.length} Complementary Teammates Found</span>
+                <span>{t('teammates.found_count', { count: candidates.length })}</span>
                 <span className="flex items-center gap-1 text-[11px] text-emerald-400 font-medium">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  Privacy Protected
+                  <span>Privacy Protected</span>
                 </span>
               </div>
 
@@ -320,7 +322,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                       <div className="text-right flex-shrink-0">
                         <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-gradient-to-r from-emerald-500/15 to-brand-500/15 border border-emerald-500/30 text-emerald-300 font-bold text-xs">
                           <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>{cand.match_score}% Match</span>
+                          <span>{t('teammates.match_score', { score: cand.match_score })}</span>
                         </div>
                       </div>
                     </div>
@@ -364,7 +366,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                       <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 space-y-2">
                         <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
                           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                          <span>Team Request Accepted! Coordinate with {cand.full_name}:</span>
+                          <span>{t('teammates.connected_title', { name: cand.full_name })}</span>
                         </div>
                         <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
                           {cand.email && (
@@ -415,7 +417,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                       <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
                         <span className="flex items-center gap-1">
                           <Shield className="w-3.5 h-3.5 text-slate-600" />
-                          Contact info hidden until request is accepted
+                          <span>{t('teammates.privacy_hidden')}</span>
                         </span>
                       </div>
                     )}
@@ -426,7 +428,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                       {isAccepted && (
                         <div className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-bold">
                           <CheckCircle2 className="w-4 h-4" />
-                          <span>Connected as Teammates</span>
+                          <span>{t('team_requests.status_accepted')}</span>
                         </div>
                       )}
 
@@ -437,8 +439,8 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                             <Clock className="w-4 h-4 text-amber-400" />
                             <span>
                               {cand.is_outgoing_request
-                                ? 'Team Request Sent (Awaiting Response)'
-                                : 'Received Team Request from this student!'}
+                                ? t('teammates.request_sent')
+                                : t('teammates.incoming_request')}
                             </span>
                           </div>
 
@@ -451,14 +453,14 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                                 className="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-sm flex items-center gap-1"
                               >
                                 <Check className="w-3.5 h-3.5" />
-                                <span>Accept</span>
+                                <span>{t('teammates.accept')}</span>
                               </button>
                               <button
                                 onClick={() => handleRespondRequest(cand, 'declined')}
                                 disabled={isSending}
                                 className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-rose-950 text-slate-300 hover:text-rose-400 border border-slate-700 transition-colors"
                               >
-                                Decline
+                                {t('teammates.decline')}
                               </button>
                             </div>
                           )}
@@ -468,7 +470,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                       {/* State 3: Declined */}
                       {isDeclined && (
                         <span className="text-xs text-slate-500 font-medium">
-                          Request was declined.
+                          {t('team_requests.status_declined')}
                         </span>
                       )}
 
@@ -477,7 +479,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full">
                           <input
                             type="text"
-                            placeholder="Add a friendly note (e.g. 'Hey, let's team up for SIH!')..."
+                            placeholder={t('teammates.note_placeholder')}
                             value={messages[cand.user_id] || ''}
                             onChange={(e) =>
                               setMessages({ ...messages, [cand.user_id]: e.target.value })
@@ -490,7 +492,7 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
                             className="flex items-center justify-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white transition-all shadow-md shadow-brand-500/20 active:scale-95 flex-shrink-0"
                           >
                             <Send className="w-3.5 h-3.5" />
-                            <span>{isSending ? 'Bhej rahe hain...' : 'Team Request Bhejo'}</span>
+                            <span>{isSending ? t('teammates.sending') : t('teammates.send_request')}</span>
                           </button>
                         </div>
                       )}
@@ -506,13 +508,13 @@ export const TeammateModal: React.FC<TeammateModalProps> = ({
         <div className="p-4 border-t border-slate-800/80 bg-slate-950/60 flex items-center justify-between text-xs text-slate-400">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Anti-spam: Maximum 10 team requests per 24 hours</span>
+            <span>{t('teammates.spam_warning')}</span>
           </span>
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
           >
-            Band Karein
+            {t('teammates.close_modal')}
           </button>
         </div>
       </div>

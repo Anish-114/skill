@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Filter, Globe, Sparkles, Calendar, Layers } from 'lucide-react';
 import { Opportunity } from '../types';
 import { OpportunityCard } from '../components/OpportunityCard';
@@ -25,6 +26,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   onMarkApplied,
   onFindTeammates,
 }) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedMode, setSelectedMode] = useState('all');
@@ -88,7 +90,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by title, tech, or organizer..."
+            placeholder={t('explore.search_placeholder')}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors shadow-inner"
           />
         </div>
@@ -110,7 +112,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   : 'text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-800'
               )}
             >
-              {c === 'all' ? 'All Categories' : c}
+              {c === 'all' ? t('explore.filter_category_all') : c}
             </button>
           ))}
         </div>
@@ -129,7 +131,13 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
                   : 'text-slate-400 hover:text-white bg-slate-900 border border-slate-800'
               )}
             >
-              {m === 'all' ? 'All Modes' : m}
+              {m === 'all'
+                ? t('explore.filter_mode_all')
+                : m === 'Online'
+                ? t('common.online')
+                : m === 'Hybrid'
+                ? t('common.hybrid')
+                : t('common.offline')}
             </button>
           ))}
         </div>
@@ -137,7 +145,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
       {/* Grid count summary */}
       <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-        <span>Showing {filtered.length} active & upcoming opportunities (sorted by deadline)</span>
+        <span>{t('explore.summary_count', { count: filtered.length })}</span>
       </div>
 
       {/* Opportunities Grid */}
@@ -165,9 +173,9 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
       ) : (
         <div className="p-12 text-center rounded-3xl glass-panel bg-slate-900/30">
           <Layers className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <h3 className="text-lg font-bold text-white mb-1">No Opportunities Found</h3>
+          <h3 className="text-lg font-bold text-white mb-1">{t('explore.empty_title')}</h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
-            Try clearing your search query or reset filters to browse all available events.
+            {t('explore.empty_subtitle')}
           </p>
           <button
             onClick={() => {
@@ -177,7 +185,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
             }}
             className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white"
           >
-            Clear Filters
+            {t('explore.clear_filters')}
           </button>
         </div>
       )}

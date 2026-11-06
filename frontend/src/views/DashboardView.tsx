@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Sparkles,
   SlidersHorizontal,
@@ -35,6 +36,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onMarkApplied,
   onFindTeammates,
 }) => {
+  const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [minScore, setMinScore] = useState<number>(40);
 
@@ -63,37 +65,48 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="relative z-10 max-w-3xl">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-500/15 text-brand-300 border border-brand-500/25 mb-3">
             <Sparkles className="w-3.5 h-3.5 animate-spin" />
-            AI Matched For You
+            {t('dashboard.hero_badge')}
           </div>
 
           <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight mb-2">
-            Welcome back, {profile?.full_name?.split(' ')[0] || 'Innovator'}!
+            {t('dashboard.hero_welcome', { name: profile?.full_name?.split(' ')[0] || 'Innovator' })}
           </h1>
           <p className="text-sm sm:text-base text-slate-300 leading-relaxed mb-6">
-            We analyzed your profile ({profile?.degree || 'B.Tech'} {profile?.branch || 'CSE'}, Year {profile?.year || '3'})
-            and ranked competitions, hackathons, and challenges matching your verified skill readiness.
+            {t('dashboard.hero_subtitle', {
+              degree: profile?.degree || 'B.Tech',
+              branch: profile?.branch || 'CSE',
+              year: profile?.year || '3',
+            })}
           </p>
 
           {/* Metric Highlights Pill Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800">
-              <span className="text-[11px] text-slate-400 font-medium block">Ranked Matches</span>
+              <span className="text-[11px] text-slate-400 font-medium block">
+                {t('dashboard.metric_ranked_matches')}
+              </span>
               <span className="text-xl font-bold text-white">{recommendations.length}</span>
             </div>
             <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800">
-              <span className="text-[11px] text-slate-400 font-medium block">Top Match Score</span>
+              <span className="text-[11px] text-slate-400 font-medium block">
+                {t('dashboard.metric_top_score')}
+              </span>
               <span className="text-xl font-bold text-emerald-400">
                 {topMatch ? `${topMatch.final_score.toFixed(0)}%` : '--'}
               </span>
             </div>
             <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800">
-              <span className="text-[11px] text-slate-400 font-medium block">Verified Skills</span>
+              <span className="text-[11px] text-slate-400 font-medium block">
+                {t('dashboard.metric_verified_skills')}
+              </span>
               <span className="text-xl font-bold text-indigo-400">
                 {profile?.skills?.length || 0}
               </span>
             </div>
             <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800">
-              <span className="text-[11px] text-slate-400 font-medium block">Bookmarked</span>
+              <span className="text-[11px] text-slate-400 font-medium block">
+                {t('dashboard.metric_bookmarked')}
+              </span>
               <span className="text-xl font-bold text-amber-400">{savedIds.size}</span>
             </div>
           </div>
@@ -115,7 +128,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                   : 'text-slate-400 hover:text-slate-200 bg-slate-800/60 hover:bg-slate-800'
               )}
             >
-              {cat === 'all' ? 'All Recommendations' : cat}
+              {cat === 'all' ? t('common.all') : cat}
             </button>
           ))}
         </div>
@@ -124,7 +137,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="flex items-center gap-3">
           <SlidersHorizontal className="w-4 h-4 text-slate-400 flex-shrink-0" />
           <span className="text-xs text-slate-300 font-medium whitespace-nowrap">
-            Min Score: <span className="font-bold text-brand-400">{minScore}%</span>
+            {t('dashboard.filter_min_score')}: <span className="font-bold text-brand-400">{minScore}%</span>
           </span>
           <input
             type="range"
@@ -175,9 +188,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       ) : (
         <div className="p-12 text-center rounded-3xl glass-panel bg-slate-900/30">
           <Flame className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-          <h3 className="text-lg font-bold text-white mb-1">No Opportunities Match Your Filters</h3>
+          <h3 className="text-lg font-bold text-white mb-1">{t('dashboard.empty_title')}</h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
-            Try adjusting your minimum recommendation score slider or select "All Recommendations".
+            {t('dashboard.empty_subtitle')}
           </p>
           <button
             onClick={() => {
@@ -186,7 +199,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             }}
             className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white"
           >
-            Reset All Filters
+            {t('dashboard.reset_filters')}
           </button>
         </div>
       )}

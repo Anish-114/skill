@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   User,
   GraduationCap,
@@ -38,6 +39,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   profile,
   onProfileUpdated,
 }) => {
+  const { t } = useTranslation();
   if (!profile) return null;
 
   // Form state
@@ -211,10 +213,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       {/* Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-          Student Profile & Skill Inventory
+          {t('profile.title')}
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Keep your academic details and technical competencies current to power accurate AI matching and eligibility checks.
+          {t('profile.subtitle')}
         </p>
       </div>
 
@@ -224,13 +226,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           <form onSubmit={handleSaveProfile} className="glass-panel p-6 sm:p-7 rounded-3xl space-y-5">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-brand-400" />
-              Academic Credentials
+              {t('profile.academic_title')}
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Degree */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Degree</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">{t('profile.degree')}</label>
                 <select
                   value={formData.degree}
                   onChange={(e) => setFormData({ ...formData, degree: e.target.value })}
@@ -247,7 +249,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
               {/* Branch */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Branch / Discipline</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">{t('profile.branch')}</label>
                 <input
                   type="text"
                   value={formData.branch}
@@ -260,7 +262,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
               {/* Academic Year */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Academic Year</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">{t('profile.year')}</label>
                 <select
                   value={formData.year}
                   onChange={(e) => setFormData({ ...formData, year: Number(e.target.value) })}
@@ -276,7 +278,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
               {/* CGPA */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">CGPA (out of 10.0)</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">{t('profile.cgpa')}</label>
                 <input
                   type="number"
                   step="0.01"
@@ -290,7 +292,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
               {/* Experience Level */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Technical Experience</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">{t('profile.experience_level')}</label>
                 <select
                   value={formData.experience_level}
                   onChange={(e) => setFormData({ ...formData, experience_level: e.target.value })}
@@ -304,7 +306,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
               {/* College Name */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">College / University</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">{t('profile.college_name')}</label>
                 <input
                   type="text"
                   value={formData.college_name}
@@ -319,7 +321,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             <div className="pt-2">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
                 <label className="block text-xs font-semibold text-slate-300">
-                  Raw Bio / Resume Summary
+                  {t('profile.bio_title')}
                 </label>
                 <div className="flex items-center gap-3">
                   {/* Hidden File Input for Resume PDF */}
@@ -340,7 +342,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     title="Upload resume in PDF format (max 5 MB) to automatically detect skills"
                   >
                     <Upload className="w-3.5 h-3.5" />
-                    <span>{uploadingPdf ? 'Extracting from PDF...' : 'Upload Resume (PDF)'}</span>
+                    <span>{uploadingPdf ? t('profile.uploading_pdf') : t('profile.upload_resume_pdf')}</span>
                   </button>
 
                   {/* Extract from Bio Button */}
@@ -351,7 +353,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     className="text-xs text-ai-primary hover:text-ai-glow font-semibold flex items-center gap-1 transition-colors disabled:opacity-50"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>{parsingBio ? 'Extracting...' : 'Extract from Bio'}</span>
+                    <span>{parsingBio ? t('profile.extracting_bio') : t('profile.extract_bio')}</span>
                   </button>
                 </div>
               </div>
@@ -377,7 +379,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 rows={4}
                 value={formData.raw_bio}
                 onChange={(e) => setFormData({ ...formData, raw_bio: e.target.value })}
-                placeholder="Paste your resume summary or technical bio here, or upload your resume PDF above (e.g. 'I am a 3rd year student passionate about building scalable microservices with FastAPI and React, fine-tuning PyTorch models...')"
+                placeholder={t('profile.bio_placeholder')}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 leading-relaxed"
               />
             </div>
@@ -388,7 +390,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4 text-ai-primary" />
-                    Detected {extractedSkills.length} New Skills from Your Resume / Bio
+                    {t('profile.detected_skills_title', { count: extractedSkills.length })}
                   </span>
                   <div className="flex items-center gap-2">
                     {extractedPdfText && (
@@ -402,7 +404,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                         title="Copy extracted resume text into your bio textarea (does not auto-save to DB)"
                       >
                         <FileText className="w-3 h-3 text-indigo-300" />
-                        <span>Insert Text into Bio</span>
+                        <span>{t('profile.insert_to_bio')}</span>
                       </button>
                     )}
                     <button
@@ -410,7 +412,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       onClick={handleAddAllExtracted}
                       className="text-xs font-bold px-2.5 py-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white transition-colors"
                     >
-                      Add All Detected
+                      {t('profile.add_all_detected')}
                     </button>
                   </div>
                 </div>
@@ -437,7 +439,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
                   <Github className="w-3.5 h-3.5" />
-                  GitHub URL
+                  {t('profile.github_url')}
                 </label>
                 <input
                   type="url"
@@ -451,7 +453,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
                   <Linkedin className="w-3.5 h-3.5" />
-                  LinkedIn URL
+                  {t('profile.linkedin_url')}
                 </label>
                 <input
                   type="url"
@@ -470,7 +472,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-brand-400" />
                     <span className="text-sm font-bold text-white">
-                      Looking for Hackathon Teammates (Teammate Discovery)
+                      {t('profile.teammates_title')}
                     </span>
                     <span
                       className={cn(
@@ -480,13 +482,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                           : 'bg-slate-800 text-slate-400 border-slate-700'
                       )}
                     >
-                      {formData.looking_for_team ? 'Opted In' : 'Private'}
+                      {formData.looking_for_team ? t('profile.opted_in') : t('profile.private')}
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Opt-in to be discovered by other students looking for complementary teammates for hackathons (like SIH).
-                    When enabled, only your name, college, year, and skills are suggested. Your contact info (email, phone, LinkedIn)
-                    remains completely hidden until you accept a team collaboration request.
+                    {t('profile.teammates_desc')}
                   </p>
                 </div>
 
@@ -506,7 +506,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-center gap-1.5 text-[11px] text-slate-400">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
                 <span>
-                  Privacy Protected: Turn off anytime to immediately disappear from all teammate recommendations.
+                  {t('profile.privacy_note')}
                 </span>
               </div>
             </div>
@@ -516,7 +516,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               {saveSuccess && (
                 <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1.5 animate-in fade-in">
                   <Check className="w-4 h-4" />
-                  Profile updated successfully!
+                  {t('profile.saved_success')}
                 </span>
               )}
               <div className="ml-auto">
@@ -526,7 +526,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 shadow-lg shadow-brand-500/20 active:scale-95 transition-all"
                 >
                   <Save className="w-4 h-4" />
-                  <span>{saving ? 'Saving...' : 'Save Profile Changes'}</span>
+                  <span>{saving ? t('profile.saving') : t('profile.save_changes')}</span>
                 </button>
               </div>
             </div>
@@ -539,7 +539,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <Award className="w-5 h-5 text-indigo-400" />
-                Skill Inventory
+                {t('profile.skills_title')}
               </h2>
               <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-brand-300 font-bold border border-slate-700">
                 {profile.skills.length} Skills
@@ -552,7 +552,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 type="text"
                 value={newSkillName}
                 onChange={(e) => setNewSkillName(e.target.value)}
-                placeholder="Enter skill (e.g. Docker, PyTorch, React)"
+                placeholder={t('profile.skill_name')}
                 className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-brand-500"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -580,7 +580,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   min="0.5"
                   value={newSkillExp}
                   onChange={(e) => setNewSkillExp(Number(e.target.value))}
-                  placeholder="Years"
+                  placeholder={t('profile.experience_years')}
                   className="px-2 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white text-center"
                 />
               </div>
@@ -592,7 +592,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 className="w-full py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>{addingSkill ? 'Adding...' : 'Add Skill'}</span>
+                <span>{addingSkill ? t('profile.adding_skill') : t('profile.add_skill')}</span>
               </button>
             </div>
 
@@ -608,7 +608,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       <div className="flex items-center gap-1.5">
                         <span className="text-xs font-semibold text-white">{s.name}</span>
                         {s.verified && (
-                          <span className="text-[10px] text-emerald-400 font-bold" title="Verified Skill">
+                          <span className="text-[10px] text-emerald-400 font-bold" title={t('profile.verified_badge')}>
                             ✓
                           </span>
                         )}
@@ -630,7 +630,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 ))
               ) : (
                 <div className="text-center py-6 text-xs text-slate-500">
-                  No skills attached yet. Add competencies above or extract from your bio.
+                  {t('profile.no_skills')}
                 </div>
               )}
             </div>

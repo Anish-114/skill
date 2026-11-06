@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   X,
   CheckCircle2,
@@ -36,6 +37,7 @@ export const EvaluationModal: React.FC<EvaluationModalProps> = ({
   onMarkApplied,
   isApplied,
 }) => {
+  const { t } = useTranslation();
   if (!isOpen || !evaluation) return null;
 
   const { eligibility, skill_gap, recommendation } = evaluation;
@@ -62,7 +64,7 @@ export const EvaluationModal: React.FC<EvaluationModalProps> = ({
             <div className="flex items-center gap-2 mb-1.5">
               <span className="text-xs uppercase tracking-wider font-bold text-brand-400 flex items-center gap-1">
                 <Brain className="w-3.5 h-3.5" />
-                Pre-Application Intelligence Report
+                {t('evaluation.title')}
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight">
@@ -369,7 +371,7 @@ export const EvaluationModal: React.FC<EvaluationModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors"
           >
-            Close Report
+            {t('evaluation.close_modal')}
           </button>
 
           <div className="flex items-center gap-2">
@@ -387,7 +389,7 @@ export const EvaluationModal: React.FC<EvaluationModalProps> = ({
                 title={isApplied ? 'Application already recorded' : 'Quick mark as Applied (auto-bookmarks if needed)'}
               >
                 <CheckCircle2 className={cn('w-3.5 h-3.5', isApplied ? 'text-indigo-400' : 'text-slate-400')} />
-                <span>{isApplied ? 'Applied ✓' : 'Mark as Applied'}</span>
+                <span>{isApplied ? t('evaluation.applied_done') : t('evaluation.mark_applied')}</span>
               </button>
             )}
 
@@ -398,7 +400,7 @@ export const EvaluationModal: React.FC<EvaluationModalProps> = ({
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 shadow-lg shadow-brand-500/25 transition-all"
               >
-                <span>Apply on Official Website</span>
+                <span>{t('common.open_official_site')}</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}

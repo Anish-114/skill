@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, LogIn, UserPlus, Sparkles, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 import { login, register } from '../api/client';
 import { StudentProfile, UserAccount, LoginPayload, RegisterPayload } from '../types';
@@ -10,6 +11,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess }) => {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -108,10 +110,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
             </div>
             <div>
               <h3 className="font-bold text-slate-100 text-base">
-                {mode === 'login' ? 'Sign In to SkillBridge AI' : 'Create Student Account'}
+                {mode === 'login' ? t('auth.title_login') : t('auth.title_register')}
               </h3>
               <p className="text-xs text-slate-400">
-                {mode === 'login' ? 'Access your personalized recommendations' : 'Get matched to hackathons & coding events'}
+                {mode === 'login' ? t('auth.subtitle_login') : t('auth.subtitle_register')}
               </p>
             </div>
           </div>
@@ -139,7 +141,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               }`}
             >
               <LogIn className="w-3.5 h-3.5" />
-              Sign In
+              {t('auth.tab_login')}
             </button>
             <button
               type="button"
@@ -154,7 +156,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               }`}
             >
               <UserPlus className="w-3.5 h-3.5" />
-              Register
+              {t('auth.tab_register')}
             </button>
           </div>
         </div>
@@ -179,7 +181,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           {mode === 'login' ? (
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">Email Address</label>
+                <label className="block text-xs font-medium text-slate-300 mb-1.5">{t('auth.email')}</label>
                 <input
                   type="email"
                   required
@@ -191,7 +193,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">Password</label>
+                <label className="block text-xs font-medium text-slate-300 mb-1.5">{t('auth.password')}</label>
                 <input
                   type="password"
                   required
@@ -207,7 +209,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 disabled={loading}
                 className="w-full mt-2 py-2.5 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-brand-600 via-indigo-600 to-indigo-500 text-white shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 hover:opacity-95 active:scale-[0.99] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {loading ? 'Authenticating...' : 'Sign In'}
+                {loading ? t('auth.signing_in') : t('auth.submit_login')}
                 {!loading && <ArrowRight className="w-4 h-4" />}
               </button>
 
@@ -217,14 +219,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   onClick={handleSwitchToDemo}
                   className="text-xs text-brand-400 hover:text-brand-300 transition-colors underline underline-offset-2"
                 >
-                  Quick fill demo credentials (Arav Sharma)
+                  {t('auth.switch_demo')}
                 </button>
               </div>
             </form>
           ) : (
             <form onSubmit={handleRegisterSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Full Name</label>
+                <label className="block text-xs font-medium text-slate-300 mb-1">{t('auth.full_name')}</label>
                 <input
                   type="text"
                   required
@@ -237,7 +239,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Email</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">{t('auth.email')}</label>
                   <input
                     type="email"
                     required
@@ -248,7 +250,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Password</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">{t('auth.password')}</label>
                   <input
                     type="password"
                     required
@@ -262,7 +264,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
 
               <div className="grid grid-cols-3 gap-2.5">
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Degree</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">{t('auth.degree')}</label>
                   <select
                     value={regDegree}
                     onChange={(e) => setRegDegree(e.target.value)}
@@ -277,7 +279,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Branch</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">{t('auth.branch')}</label>
                   <input
                     type="text"
                     required
@@ -288,7 +290,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-300 mb-1">Year</label>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">{t('auth.academic_year')}</label>
                   <select
                     value={regYear}
                     onChange={(e) => setRegYear(Number(e.target.value))}
@@ -303,7 +305,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">College / University (Optional)</label>
+                <label className="block text-xs font-medium text-slate-300 mb-1">{t('auth.college_name')}</label>
                 <input
                   type="text"
                   value={regCollege}
@@ -318,7 +320,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
                 disabled={loading}
                 className="w-full mt-2 py-2.5 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:opacity-95 active:scale-[0.99] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {loading ? 'Creating Account...' : 'Complete Registration'}
+                {loading ? t('auth.registering') : t('auth.submit_register')}
                 {!loading && <ArrowRight className="w-4 h-4" />}
               </button>
             </form>
