@@ -38,6 +38,8 @@ node_modules/
 frontend/node_modules/
 frontend/dist/
 dist/
+backend/app/static/assets/
+backend/app/static/index.html
 
 # IDE & OS
 .vscode/

@@ -1,0 +1,65 @@
+name: Deploy to Hugging Face Space
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    name: Build Frontend & Deploy to Space
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build Frontend Application
+        working-directory: frontend
+        run: npm run build
+
+      - name: Copy Frontend Build to Backend Static Directory
+        run: |
+          mkdir -p backend/app/static
+          rm -rf backend/app/static/*
+          cp -r frontend/dist/* backend/app/static/
+          ls -la backend/app/static/
+
+      - name: Deploy to Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          if [ -z "$HF_TOKEN" ]; then
+            echo "::error::HF_TOKEN secret is not set. Please add HF_TOKEN with write permission in repository Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Stage compiled static assets for temporary release commit
+          git add -f backend/app/static/
+          git commit -m "Deploy production build to Hugging Face Space [skip ci]" || echo "No changes to commit"
+
+          # Add Space git remote using masked token
+          git remote add space "https://anish-114:$HF_TOKEN@huggingface.co/spaces/anish-114/skillbridge-ai"
+
+          # Push only to Hugging Face Space (GitHub repository main branch stays clean without build artifacts)
+          echo "Pushing latest build to Hugging Face Space: anish-114/skillbridge-ai..."
+          git push space HEAD:main --force
+          echo "Successfully pushed deployment to Hugging Face Space."
