@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar, TabType } from './components/Navbar';
 import { DashboardView } from './views/DashboardView';
 import { ExploreView } from './views/ExploreView';
 import { ProfileView } from './views/ProfileView';
 import { SavedView } from './views/SavedView';
 import { EvaluationModal } from './components/EvaluationModal';
+import { AuthModal } from './components/AuthModal';
 import {
   StudentProfile,
   Opportunity,
   OpportunityRecommendation,
   SavedOpportunityItem,
   FullEvaluation,
+  UserAccount,
 } from './types';
 import {
   getProfile,
@@ -20,6 +22,8 @@ import {
   evaluateOpportunity,
   toggleSaveOpportunity,
   checkHealth,
+  getToken,
+  logout,
 } from './api/client';
 
 export const App: React.FC = () => {
@@ -29,6 +33,10 @@ export const App: React.FC = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [savedList, setSavedList] = useState<SavedOpportunityItem[]>([]);
   const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
+
+  // Auth state
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(Boolean(getToken()));
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Loading states
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -42,12 +50,7 @@ export const App: React.FC = () => {
   const [evaluatingUrl, setEvaluatingUrl] = useState<string | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Load all initial data on mount
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  const loadInitialData = async () => {
+  const loadInitialData = useCallback(async () => {
     // 1. Check health
     try {
       const health = await checkHealth();
@@ -64,6 +67,7 @@ export const App: React.FC = () => {
       setProfile(profData);
     } catch (err) {
       console.error('Failed to load profile:', err);
+      setProfile(null);
     } finally {
       setLoadingProfile(false);
     }
@@ -75,6 +79,7 @@ export const App: React.FC = () => {
       setRecommendations(recsData);
     } catch (err) {
       console.error('Failed to load recommendations:', err);
+      setRecommendations([]);
     } finally {
       setLoadingRecs(false);
     }
@@ -98,9 +103,34 @@ export const App: React.FC = () => {
       setSavedIds(new Set(savedData.map((s) => s.opportunity_id)));
     } catch (err) {
       console.error('Failed to load saved items:', err);
+      setSavedList([]);
+      setSavedIds(new Set());
     } finally {
       setLoadingSaved(false);
     }
+  }, []);
+
+  // Load all initial data on mount
+  useEffect(() => {
+    loadInitialData();
+  }, [loadInitialData]);
+
+  const handleAuthSuccess = (newProfile: StudentProfile, _user: UserAccount) => {
+    setIsAuthenticated(true);
+    setProfile(newProfile);
+    // Reload recommendations and saved list for the newly authenticated user
+    getRecommendations().then((recs) => setRecommendations(recs));
+    getSavedOpportunities().then((saved) => {
+      setSavedList(saved);
+      setSavedIds(new Set(saved.map((s) => s.opportunity_id)));
+    });
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsAuthenticated(false);
+    // Reload initial data (falls back to demo or clean baseline)
+    loadInitialData();
   };
 
   const handleToggleSave = async (oppId: number) => {
@@ -167,6 +197,9 @@ export const App: React.FC = () => {
         savedCount={savedIds.size}
         serverHealthy={serverHealthy}
         studentName={profile?.full_name}
+        isAuthenticated={isAuthenticated}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onLogout={handleLogout}
       />
 
       {/* Main View Area */}
@@ -215,6 +248,13 @@ export const App: React.FC = () => {
         evaluation={selectedEvaluation}
         onClose={() => setIsModalOpen(false)}
         officialUrl={evaluatingUrl}
+      />
+
+      {/* Authentication / Switch User Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
       />
 
       {/* Footer */}

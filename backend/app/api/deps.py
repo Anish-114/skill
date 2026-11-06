@@ -30,12 +30,26 @@ def get_current_user(
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
             email: Optional[str] = payload.get("sub")
+            user_id: Optional[int] = payload.get("user_id")
+            user = None
             if email:
                 user = db.query(User).filter(User.email == email).first()
-                if user and user.is_active:
-                    return user
+            elif user_id:
+                user = db.query(User).filter(User.id == user_id).first()
+            
+            if user and user.is_active:
+                return user
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User account not found or inactive",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         except JWTError:
-            pass  # Fall through to dev fallback or 401
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid or expired authentication token",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
     # Development fallback to primary seeded student
     if settings.DEBUG or settings.ENVIRONMENT == "development":

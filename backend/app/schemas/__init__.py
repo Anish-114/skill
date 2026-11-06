@@ -28,6 +28,12 @@ from .saved_opportunity import (
     SavedOpportunityCreate,
     SavedOpportunityResponse,
 )
+from .auth import (
+    UserRegisterRequest,
+    UserLoginRequest,
+    UserResponse,
+    TokenResponse,
+)
 
 __all__ = [
     "StudentSkillItem",
@@ -50,4 +56,8 @@ __all__ = [
     "FullEvaluationResponse",
     "SavedOpportunityCreate",
     "SavedOpportunityResponse",
+    "UserRegisterRequest",
+    "UserLoginRequest",
+    "UserResponse",
+    "TokenResponse",
 ]

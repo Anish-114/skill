@@ -126,3 +126,35 @@ export interface SkillParseResponse {
   matched_taxonomy_skills: Array<{ id: number; name: string; category?: string }>;
   unmatched_tokens: string[];
 }
+
+export interface UserAccount {
+  id: number;
+  email: string;
+  full_name: string;
+  is_active: boolean;
+  is_superuser: boolean;
+  created_at?: string;
+  profile?: StudentProfile;
+}
+
+export interface AuthResponse {
+  access_token: string;
+  token_type: string;
+  user: UserAccount;
+}
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface RegisterPayload {
+  email: string;
+  password: string;
+  full_name: string;
+  degree?: string;
+  branch?: string;
+  year?: number;
+  college_name?: string;
+  experience_level?: string;
+}

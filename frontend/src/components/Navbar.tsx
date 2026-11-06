@@ -1,5 +1,16 @@
 import React from 'react';
-import { Sparkles, Compass, Bookmark, User, Activity, CheckCircle2, AlertCircle } from 'lucide-react';
+import {
+  Sparkles,
+  Compass,
+  Bookmark,
+  User,
+  Activity,
+  CheckCircle2,
+  AlertCircle,
+  LogIn,
+  LogOut,
+  UserCheck,
+} from 'lucide-react';
 import { cn } from '../utils/cn';
 
 export type TabType = 'dashboard' | 'explore' | 'saved' | 'profile';
@@ -10,6 +21,9 @@ interface NavbarProps {
   savedCount: number;
   serverHealthy: boolean | null;
   studentName?: string;
+  isAuthenticated: boolean;
+  onOpenAuthModal: () => void;
+  onLogout: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,6 +32,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   savedCount,
   serverHealthy,
   studentName,
+  isAuthenticated,
+  onOpenAuthModal,
+  onLogout,
 }) => {
   const tabs = [
     { id: 'dashboard' as TabType, label: 'AI Recommendations', icon: Sparkles },
@@ -80,8 +97,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           })}
         </nav>
 
-        {/* Right Status & Profile Pill */}
-        <div className="flex items-center gap-3">
+        {/* Right Status & Auth Actions */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
           {/* Server status pill */}
           <div
             className={cn(
@@ -106,17 +123,55 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
           </div>
 
-          {/* Student Avatar Tag */}
-          <div
-            onClick={() => setActiveTab('profile')}
-            className="cursor-pointer flex items-center gap-2 pl-2 border-l border-slate-800 hover:opacity-80 transition-opacity"
-          >
-            <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-brand-300">
-              {studentName ? studentName.charAt(0) : 'A'}
-            </div>
-            <span className="text-xs font-medium text-slate-300 hidden lg:inline max-w-[120px] truncate">
-              {studentName || 'Student'}
-            </span>
+          {/* Student Profile & Switch User */}
+          <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
+            <button
+              onClick={() => setActiveTab('profile')}
+              className="flex items-center gap-2 text-left hover:opacity-85 transition-opacity"
+              title="View & Edit Profile"
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-brand-700 to-indigo-600 border border-brand-500/30 flex items-center justify-center text-xs font-bold text-white shadow-sm">
+                {studentName ? studentName.charAt(0).toUpperCase() : 'U'}
+              </div>
+              <div className="hidden lg:flex flex-col">
+                <span className="text-xs font-semibold text-slate-200 max-w-[110px] truncate">
+                  {studentName || 'Student Profile'}
+                </span>
+                <span className="text-[10px] text-slate-400">
+                  {isAuthenticated ? 'Active User' : 'Demo Account'}
+                </span>
+              </div>
+            </button>
+
+            {/* Auth Action Button */}
+            {isAuthenticated ? (
+              <button
+                onClick={onLogout}
+                title="Log out and switch to demo"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-900 border border-transparent hover:border-slate-800 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={onOpenAuthModal}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-brand-600/90 hover:bg-brand-500 text-white shadow-sm transition-all"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sign In / Register</span>
+              </button>
+            )}
+
+            {isAuthenticated && (
+              <button
+                onClick={onOpenAuthModal}
+                className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 transition-colors border border-slate-800"
+                title="Switch User Account"
+              >
+                <UserCheck className="w-3 h-3 text-brand-400" />
+                <span>Switch</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
