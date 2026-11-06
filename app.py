@@ -58,8 +58,8 @@ def serve_spa_root():
 @app.get("/{full_path:path}", include_in_schema=False)
 def serve_spa_fallback(full_path: str):
     if (
-        full_path.startswith("api")
-        or full_path.startswith("gradio")
+        full_path.startswith("api/")
+        or full_path.startswith("gradio/")
         or full_path in ["health", "docs", "openapi.json", "redoc"]
     ):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource Not Found")
@@ -74,4 +74,10 @@ def serve_spa_fallback(full_path: str):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Page Not Found")
 
 if __name__ == "__main__":
+    # launch() call nahi hota, isliye spaces ka startup hook fire nahi hota.
+    # Wahi startup report yahan manually bhej rahe hain (sirf ZeroGPU par ye function hota hai).
+    import spaces.zero as _zero
+    if hasattr(_zero, "startup"):
+        _zero.startup()
+
     uvicorn.run(app, host="0.0.0.0", port=7860)
