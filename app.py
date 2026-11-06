@@ -4,12 +4,6 @@ import spaces
 def predict():
     return "ready"
 
-# Execute once at module load for static detection
-try:
-    predict()
-except Exception:
-    pass
-
 import os
 import sys
 
@@ -22,6 +16,7 @@ if "app" in sys.modules and not hasattr(sys.modules["app"], "__path__"):
 
 from app.main import app as fastapi_app
 import gradio as gr
+import uvicorn
 
 with gr.Blocks(title="SkillBridge AI") as demo:
     btn = gr.Button("Status")
@@ -29,3 +24,6 @@ with gr.Blocks(title="SkillBridge AI") as demo:
     btn.click(fn=predict, outputs=out)
 
 app = gr.mount_gradio_app(fastapi_app, demo, path="/gradio")
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=7860)
