@@ -41,6 +41,12 @@ dist/
 backend/app/static/assets/
 backend/app/static/index.html
 
+# Uploads & Exports
+uploads/
+export_data/
+*export*.json
+*.pdf
+
 # IDE & OS
 .vscode/
 .idea/
