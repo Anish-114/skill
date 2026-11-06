@@ -16,6 +16,8 @@ import {
   FileText,
   AlertTriangle,
   X,
+  Users,
+  ShieldCheck,
 } from 'lucide-react';
 import { StudentProfile, StudentSkillItem } from '../types';
 import {
@@ -49,6 +51,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     raw_bio: profile.raw_bio || '',
     github_url: profile.github_url || '',
     linkedin_url: profile.linkedin_url || '',
+    looking_for_team: profile.looking_for_team ?? false,
   });
 
   const [saving, setSaving] = useState(false);
@@ -457,6 +460,54 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   placeholder="https://linkedin.com/in/username"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-brand-500"
                 />
+              </div>
+            </div>
+
+            {/* Hackathon Teammates Opt-in Toggle */}
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-950/40 border border-slate-800 hover:border-slate-700 transition-colors">
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-brand-400" />
+                    <span className="text-sm font-bold text-white">
+                      Looking for Hackathon Teammates (Teammate Discovery)
+                    </span>
+                    <span
+                      className={cn(
+                        'text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border',
+                        formData.looking_for_team
+                          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                          : 'bg-slate-800 text-slate-400 border-slate-700'
+                      )}
+                    >
+                      {formData.looking_for_team ? 'Opted In' : 'Private'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    Opt-in to be discovered by other students looking for complementary teammates for hackathons (like SIH).
+                    When enabled, only your name, college, year, and skills are suggested. Your contact info (email, phone, LinkedIn)
+                    remains completely hidden until you accept a team collaboration request.
+                  </p>
+                </div>
+
+                <label className="relative inline-flex items-center cursor-pointer flex-shrink-0 mt-1">
+                  <input
+                    type="checkbox"
+                    checked={formData.looking_for_team}
+                    onChange={(e) =>
+                      setFormData({ ...formData, looking_for_team: e.target.checked })
+                    }
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                </label>
+              </div>
+
+              <div className="mt-2 pt-2 border-t border-slate-800/60 flex items-center gap-1.5 text-[11px] text-slate-400">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                <span>
+                  Privacy Protected: Turn off anytime to immediately disappear from all teammate recommendations.
+                </span>
               </div>
             </div>
 

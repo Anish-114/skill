@@ -25,6 +25,7 @@ class StudentProfileBase(BaseModel):
     github_url: Optional[str] = None
     linkedin_url: Optional[str] = None
     portfolio_url: Optional[str] = None
+    looking_for_team: bool = False
 
 
 class StudentProfileCreate(StudentProfileBase):
@@ -43,6 +44,7 @@ class StudentProfileUpdate(BaseModel):
     github_url: Optional[str] = None
     linkedin_url: Optional[str] = None
     portfolio_url: Optional[str] = None
+    looking_for_team: Optional[bool] = None
     skills: Optional[List[StudentSkillItem]] = None
 
 

@@ -11,6 +11,7 @@ import {
   Zap,
   Award,
   Check,
+  Users,
 } from 'lucide-react';
 import { Opportunity, OpportunityRecommendation } from '../types';
 import { cn } from '../utils/cn';
@@ -24,6 +25,7 @@ interface OpportunityCardProps {
   isSaved?: boolean;
   savedStatus?: string;
   onMarkApplied?: (oppId: number) => void;
+  onFindTeammates?: (opportunity: Opportunity) => void;
 }
 
 export const OpportunityCard: React.FC<OpportunityCardProps> = ({
@@ -34,6 +36,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
   isSaved,
   savedStatus,
   onMarkApplied,
+  onFindTeammates,
 }) => {
   // Format deadline date in IST and calculate countdown
   const { label: countdownLabel, isUrgent } = getDeadlineCountdown(opportunity.deadline);
@@ -256,6 +259,17 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
 
         {/* Buttons */}
         <div className="flex items-center gap-1.5">
+          {opportunity.category?.toLowerCase().includes('hackathon') && onFindTeammates && (
+            <button
+              onClick={() => onFindTeammates(opportunity)}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600/90 hover:bg-indigo-500 text-white transition-all shadow-md shadow-indigo-500/20 active:scale-95 border border-indigo-500/30"
+              title="Find complementary teammates for this hackathon"
+            >
+              <Users className="w-3 h-3 text-indigo-200" />
+              <span>Teammates</span>
+            </button>
+          )}
+
           <button
             onClick={() => onEvaluate(opportunity.id)}
             className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white transition-all shadow-md shadow-brand-500/20 active:scale-95"

@@ -5,6 +5,7 @@ from .skill import Skill, StudentSkill
 from .opportunity import Opportunity
 from .saved_opportunity import SavedOpportunity
 from .sync_log import EventSyncLog
+from .team_request import TeamRequest
 
 __all__ = [
     "Base",
@@ -15,4 +16,5 @@ __all__ = [
     "Opportunity",
     "SavedOpportunity",
     "EventSyncLog",
+    "TeamRequest",
 ]

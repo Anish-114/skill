@@ -11,6 +11,8 @@ from app.schemas.opportunity import (
     OpportunityResponse,
     OpportunityDetailResponse,
 )
+from app.schemas.team_request import TeammateCandidateResponse
+from app.services.teammate_engine import find_teammates_for_opportunity
 
 router = APIRouter(prefix="/opportunities", tags=["Opportunities"])
 
@@ -106,3 +108,24 @@ def get_opportunity_detail(
         saved_status=saved_record.status if saved_record else None,
         saved_notes=saved_record.notes if saved_record else None
     )
+
+
+@router.get("/{id}/teammates", response_model=List[TeammateCandidateResponse])
+def get_opportunity_teammates(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Suggests complementary teammates for this hackathon whose skills cover
+    the current student's missing technical prerequisites.
+    Only opt-in students (looking_for_team=True) are suggested.
+    """
+    opportunity = db.query(Opportunity).filter(Opportunity.id == id).first()
+    if not opportunity:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Opportunity with ID {id} not found."
+        )
+
+    return find_teammates_for_opportunity(db, current_user, opportunity)

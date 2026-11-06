@@ -6,6 +6,8 @@ import { ProfileView } from './views/ProfileView';
 import { SavedView } from './views/SavedView';
 import { EvaluationModal } from './components/EvaluationModal';
 import { AuthModal } from './components/AuthModal';
+import { TeammateModal } from './components/TeammateModal';
+import { TeamRequestsModal } from './components/TeamRequestsModal';
 import {
   StudentProfile,
   Opportunity,
@@ -22,6 +24,7 @@ import {
   evaluateOpportunity,
   toggleSaveOpportunity,
   saveOpportunity,
+  getMyTeamRequests,
   checkHealth,
   getToken,
   logout,
@@ -50,6 +53,12 @@ export const App: React.FC = () => {
   const [selectedEvaluation, setSelectedEvaluation] = useState<FullEvaluation | null>(null);
   const [evaluatingUrl, setEvaluatingUrl] = useState<string | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Teammates & Team Requests state
+  const [selectedTeammateOpp, setSelectedTeammateOpp] = useState<Opportunity | null>(null);
+  const [isTeammateModalOpen, setIsTeammateModalOpen] = useState(false);
+  const [isTeamRequestsModalOpen, setIsTeamRequestsModalOpen] = useState(false);
+  const [pendingTeamRequestsCount, setPendingTeamRequestsCount] = useState<number>(0);
 
   const loadInitialData = useCallback(async () => {
     // 1. Check health
@@ -120,6 +129,24 @@ export const App: React.FC = () => {
     } finally {
       setLoadingSaved(false);
     }
+    // 6. Fetch Team Requests Count
+    try {
+      const teamReqs = await getMyTeamRequests('received');
+      const pending = teamReqs.filter((r) => r.status === 'pending').length;
+      setPendingTeamRequestsCount(pending);
+    } catch (err) {
+      // Ignored if not authenticated
+    }
+  }, []);
+
+  const refreshTeamRequestsCount = useCallback(async () => {
+    try {
+      const teamReqs = await getMyTeamRequests('received');
+      const pending = teamReqs.filter((r) => r.status === 'pending').length;
+      setPendingTeamRequestsCount(pending);
+    } catch (err) {
+      // Ignored
+    }
   }, []);
 
   // Load all initial data on mount
@@ -136,6 +163,7 @@ export const App: React.FC = () => {
       setSavedList(saved);
       setSavedIds(new Set(saved.map((s) => s.opportunity_id)));
     });
+    refreshTeamRequestsCount();
   };
 
   const handleLogout = () => {
@@ -256,6 +284,11 @@ export const App: React.FC = () => {
     );
   };
 
+  const handleFindTeammates = (opp: Opportunity) => {
+    setSelectedTeammateOpp(opp);
+    setIsTeammateModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
       {/* Top Navigation */}
@@ -268,6 +301,8 @@ export const App: React.FC = () => {
         isAuthenticated={isAuthenticated}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
+        pendingTeamRequestsCount={pendingTeamRequestsCount}
+        onOpenTeamRequests={() => setIsTeamRequestsModalOpen(true)}
       />
 
       {/* Main View Area */}
@@ -282,6 +317,7 @@ export const App: React.FC = () => {
             savedIds={savedIds}
             getSavedStatus={getSavedStatus}
             onMarkApplied={handleMarkApplied}
+            onFindTeammates={handleFindTeammates}
           />
         )}
 
@@ -294,6 +330,7 @@ export const App: React.FC = () => {
             savedIds={savedIds}
             getSavedStatus={getSavedStatus}
             onMarkApplied={handleMarkApplied}
+            onFindTeammates={handleFindTeammates}
           />
         )}
 
@@ -335,6 +372,23 @@ export const App: React.FC = () => {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onAuthSuccess={handleAuthSuccess}
+      />
+
+      {/* Teammate Complementary Matching Modal */}
+      <TeammateModal
+        isOpen={isTeammateModalOpen}
+        onClose={() => setIsTeammateModalOpen(false)}
+        opportunity={selectedTeammateOpp}
+        currentUserProfile={profile}
+        onProfileUpdated={handleProfileUpdated}
+        onOpenRequests={() => setIsTeamRequestsModalOpen(true)}
+      />
+
+      {/* Team Requests Inbox Modal */}
+      <TeamRequestsModal
+        isOpen={isTeamRequestsModalOpen}
+        onClose={() => setIsTeamRequestsModalOpen(false)}
+        onRequestsUpdated={refreshTeamRequestsCount}
       />
 
       {/* Footer */}

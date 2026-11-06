@@ -114,6 +114,7 @@ def _format_profile_response(profile: StudentProfile, user: User) -> StudentProf
         github_url=profile.github_url,
         linkedin_url=profile.linkedin_url,
         portfolio_url=profile.portfolio_url,
+        looking_for_team=profile.looking_for_team if hasattr(profile, "looking_for_team") and profile.looking_for_team is not None else False,
         skills=skills_data,
         created_at=profile.created_at,
         updated_at=profile.updated_at
@@ -140,7 +141,7 @@ def update_my_profile(
     fields_to_update = [
         "phone", "college_name", "degree", "branch", "year",
         "cgpa", "experience_level", "raw_bio", "github_url",
-        "linkedin_url", "portfolio_url"
+        "linkedin_url", "portfolio_url", "looking_for_team"
     ]
 
     for field in fields_to_update:

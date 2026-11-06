@@ -10,6 +10,7 @@ import {
   LogIn,
   LogOut,
   UserCheck,
+  Users,
 } from 'lucide-react';
 import { cn } from '../utils/cn';
 
@@ -24,6 +25,8 @@ interface NavbarProps {
   isAuthenticated: boolean;
   onOpenAuthModal: () => void;
   onLogout: () => void;
+  pendingTeamRequestsCount?: number;
+  onOpenTeamRequests?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -35,6 +38,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   isAuthenticated,
   onOpenAuthModal,
   onLogout,
+  pendingTeamRequestsCount = 0,
+  onOpenTeamRequests,
 }) => {
   const tabs = [
     { id: 'dashboard' as TabType, label: 'AI Recommendations', icon: Sparkles },
@@ -99,6 +104,23 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right Status & Auth Actions */}
         <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Team Requests Button */}
+          {onOpenTeamRequests && (
+            <button
+              onClick={onOpenTeamRequests}
+              className="relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-800 transition-colors"
+              title="Meri Team Requests & Collaboration Invites"
+            >
+              <Users className="w-3.5 h-3.5 text-brand-400" />
+              <span className="hidden sm:inline">Team Requests</span>
+              {pendingTeamRequestsCount > 0 && (
+                <span className="px-1.5 py-0.2 text-[10px] font-bold rounded-full bg-brand-500 text-white animate-pulse">
+                  {pendingTeamRequestsCount}
+                </span>
+              )}
+            </button>
+          )}
+
           {/* Server status pill */}
           <div
             className={cn(

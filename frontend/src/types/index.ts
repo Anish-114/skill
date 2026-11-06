@@ -22,6 +22,7 @@ export interface StudentProfile {
   github_url?: string;
   linkedin_url?: string;
   portfolio_url?: string;
+  looking_for_team?: boolean;
   skills: StudentSkillItem[];
   created_at?: string;
   updated_at?: string;
@@ -186,4 +187,55 @@ export interface RegisterPayload {
   year?: number;
   college_name?: string;
   experience_level?: string;
+}
+
+export interface TeammateCandidate {
+  user_id: number;
+  full_name: string;
+  college_name?: string;
+  degree?: string;
+  branch?: string;
+  year?: number;
+  skills: string[];
+  match_score: number;
+  complementary_skills: string[];
+  explanation: string;
+  request_status?: 'pending' | 'accepted' | 'declined' | null;
+  request_id?: number | null;
+  is_outgoing_request?: boolean | null;
+  email?: string | null;
+  phone?: string | null;
+  github_url?: string | null;
+  linkedin_url?: string | null;
+  portfolio_url?: string | null;
+}
+
+export interface TeamUserSummary {
+  user_id: number;
+  full_name: string;
+  college_name?: string;
+  degree?: string;
+  branch?: string;
+  year?: number;
+  skills: string[];
+  email?: string | null;
+  phone?: string | null;
+  github_url?: string | null;
+  linkedin_url?: string | null;
+  portfolio_url?: string | null;
+}
+
+export interface TeamRequestItem {
+  id: number;
+  from_user_id: number;
+  to_user_id: number;
+  opportunity_id: number;
+  opportunity_title: string;
+  status: 'pending' | 'accepted' | 'declined';
+  message?: string;
+  created_at: string;
+  updated_at: string;
+  from_user: TeamUserSummary;
+  to_user: TeamUserSummary;
+  is_sender: boolean;
 }

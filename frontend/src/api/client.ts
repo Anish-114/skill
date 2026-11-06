@@ -12,6 +12,8 @@ import {
   LoginPayload,
   RegisterPayload,
   UserAccount,
+  TeammateCandidate,
+  TeamRequestItem,
 } from '../types';
 
 const API_BASE = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '/api/v1';
@@ -219,5 +221,35 @@ export const getSkillsTaxonomy = async (category?: string, search?: string): Pro
   const response = await apiClient.get<SkillTaxonomyItem[]>('/skills', {
     params: { category, search },
   });
+  return response.data;
+};
+
+// Teammates & Collaboration Requests
+export const getOpportunityTeammates = async (oppId: number): Promise<TeammateCandidate[]> => {
+  const response = await apiClient.get<TeammateCandidate[]>(`/opportunities/${oppId}/teammates`);
+  return response.data;
+};
+
+export const sendTeamRequest = async (payload: {
+  to_user_id: number;
+  opportunity_id: number;
+  message?: string;
+}): Promise<TeamRequestItem> => {
+  const response = await apiClient.post<TeamRequestItem>('/team-requests', payload);
+  return response.data;
+};
+
+export const getMyTeamRequests = async (filterType?: 'sent' | 'received'): Promise<TeamRequestItem[]> => {
+  const response = await apiClient.get<TeamRequestItem[]>('/team-requests', {
+    params: filterType ? { filter_type: filterType } : undefined,
+  });
+  return response.data;
+};
+
+export const updateTeamRequestStatus = async (
+  requestId: number,
+  status: 'accepted' | 'declined'
+): Promise<TeamRequestItem> => {
+  const response = await apiClient.patch<TeamRequestItem>(`/team-requests/${requestId}`, { status });
   return response.data;
 };

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, List, Optional
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
@@ -47,6 +47,9 @@ class StudentProfile(Base):
     github_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     linkedin_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     portfolio_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+
+    # Teammate Matching Opt-In
+    looking_for_team: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False, index=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), 

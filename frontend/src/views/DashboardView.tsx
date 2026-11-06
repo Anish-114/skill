@@ -8,7 +8,7 @@ import {
   Filter,
   CheckCircle,
 } from 'lucide-react';
-import { OpportunityRecommendation, StudentProfile } from '../types';
+import { Opportunity, OpportunityRecommendation, StudentProfile } from '../types';
 import { OpportunityCard } from '../components/OpportunityCard';
 import { cn } from '../utils/cn';
 
@@ -21,6 +21,7 @@ interface DashboardViewProps {
   savedIds: Set<number>;
   getSavedStatus?: (oppId: number) => string | undefined;
   onMarkApplied?: (oppId: number) => void;
+  onFindTeammates?: (opportunity: Opportunity) => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -32,6 +33,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   savedIds,
   getSavedStatus,
   onMarkApplied,
+  onFindTeammates,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [minScore, setMinScore] = useState<number>(40);
@@ -166,6 +168,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               isSaved={savedIds.has(rec.opportunity.id)}
               savedStatus={getSavedStatus?.(rec.opportunity.id)}
               onMarkApplied={onMarkApplied}
+              onFindTeammates={onFindTeammates}
             />
           ))}
         </div>

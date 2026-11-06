@@ -12,6 +12,7 @@ interface ExploreViewProps {
   savedIds: Set<number>;
   getSavedStatus?: (oppId: number) => string | undefined;
   onMarkApplied?: (oppId: number) => void;
+  onFindTeammates?: (opportunity: Opportunity) => void;
 }
 
 export const ExploreView: React.FC<ExploreViewProps> = ({
@@ -22,6 +23,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   savedIds,
   getSavedStatus,
   onMarkApplied,
+  onFindTeammates,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -156,6 +158,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               isSaved={savedIds.has(opp.id)}
               savedStatus={getSavedStatus?.(opp.id)}
               onMarkApplied={onMarkApplied}
+              onFindTeammates={onFindTeammates}
             />
           ))}
         </div>

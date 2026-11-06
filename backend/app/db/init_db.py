@@ -12,6 +12,7 @@ from app.models import (
     StudentSkill,
     Opportunity,
     SavedOpportunity,
+    TeamRequest,
 )
 from app.db.seed_data import SAMPLE_SKILLS, SAMPLE_OPPORTUNITIES, SAMPLE_USERS
 
@@ -74,6 +75,13 @@ def init_db(db: Session = None) -> None:
                 if "start_date" not in cols:
                     logger.info("Migrating opportunities table: adding start_date column...")
                     conn.execute(text("ALTER TABLE opportunities ADD COLUMN start_date DATETIME"))
+                    conn.commit()
+
+            sp_cols = [row[1] for row in conn.execute(text("PRAGMA table_info(student_profiles)")).fetchall()]
+            if sp_cols:
+                if "looking_for_team" not in sp_cols:
+                    logger.info("Migrating student_profiles table: adding looking_for_team column...")
+                    conn.execute(text("ALTER TABLE student_profiles ADD COLUMN looking_for_team BOOLEAN NOT NULL DEFAULT 0"))
                     conn.commit()
     except Exception as mig_err:
         logger.warning(f"Column migration check note: {mig_err}")
